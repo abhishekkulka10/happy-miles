@@ -4,317 +4,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#188038">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Sheet Viewer">
     <title>Sheet Viewer</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
-            background: #f8f9fa;
-            color: #202124;
-            overflow-x: hidden;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .banner {
-            background: #188038;
-            color: #fff;
-            text-align: center;
-            padding: 14px 16px;
-            font-size: 18px;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-            flex-shrink: 0;
-        }
-        .topbar {
-            background: #fff;
-            border-bottom: 1px solid #dadce0;
-            padding: 10px 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-shrink: 0;
-            box-shadow: 0 1px 2px rgba(60,64,67,0.1);
-        }
-        .topbar .logo {
-            width: 34px; height: 34px;
-            background: #188038;
-            border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: 700; font-size: 15px;
-            flex-shrink: 0;
-        }
+        body { font-family: 'Segoe UI', Roboto, Arial, sans-serif; background: #f8f9fa; color: #202124; overflow-x: hidden; height: 100vh; display: flex; flex-direction: column; }
+        .banner { background: #188038; color: #fff; text-align: center; padding: 14px 16px; font-size: 18px; font-weight: 600; letter-spacing: 0.3px; flex-shrink: 0; }
+        .topbar { background: #fff; border-bottom: 1px solid #dadce0; padding: 10px 16px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; box-shadow: 0 1px 2px rgba(60,64,67,0.1); }
+        .topbar .logo { width: 34px; height: 34px; background: #188038; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 15px; flex-shrink: 0; }
         .topbar .title { font-size: 16px; font-weight: 500; }
-        .topbar .actions {
-            margin-left: auto;
-            display: flex; gap: 6px; align-items: center;
-        }
-        .btn {
-            padding: 6px 14px;
-            border: 1px solid #dadce0;
-            background: #fff;
-            border-radius: 4px;
-            font-size: 12px;
-            cursor: pointer;
-            color: #3c4043;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.15s;
-        }
+        .topbar .actions { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+        .btn { padding: 6px 14px; border: 1px solid #dadce0; background: #fff; border-radius: 4px; font-size: 12px; cursor: pointer; color: #3c4043; display: inline-flex; align-items: center; gap: 5px; transition: all 0.15s; }
         .btn:hover { background: #f1f3f4; border-color: #bdc1c6; }
         .btn:active { background: #e8eaed; transform: scale(0.97); }
         .btn.primary { background: #188038; color: #fff; border-color: #137333; }
         .btn.primary:hover { background: #137333; }
-        .status {
-            font-size: 12px; color: #5f6368;
-            display: flex; align-items: center; gap: 6px;
-            margin-left: 8px;
-        }
-        .status-dot {
-            width: 7px; height: 7px; border-radius: 50%;
-            background: #34a853; animation: pulse 2s infinite;
-        }
+        .status { font-size: 12px; color: #5f6368; display: flex; align-items: center; gap: 6px; margin-left: 8px; }
+        .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #34a853; animation: pulse 2s infinite; }
         .status-dot.error { background: #ea4335; animation: none; }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-        .tabs {
-            background: #fff;
-            border-bottom: 1px solid #dadce0;
-            display: flex;
-            align-items: center;
-            padding: 0 8px;
-            flex-shrink: 0;
-            overflow-x: auto;
-        }
-        .tab {
-            padding: 10px 20px;
-            font-size: 13px;
-            color: #5f6368;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            white-space: nowrap;
-            transition: all 0.15s;
-        }
+        .tabs { background: #fff; border-bottom: 1px solid #dadce0; display: flex; align-items: center; padding: 0 8px; flex-shrink: 0; overflow-x: auto; }
+        .tab { padding: 10px 20px; font-size: 13px; color: #5f6368; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.15s; }
         .tab:hover { background: #f1f3f4; color: #202124; }
         .tab.active { color: #188038; border-bottom-color: #188038; font-weight: 500; background: #e6f4ea; }
-        .toolbar {
-            background: #fff;
-            border-bottom: 1px solid #e8eaed;
-            padding: 10px 16px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-            flex-shrink: 0;
-        }
+        .toolbar { background: #fff; border-bottom: 1px solid #e8eaed; padding: 10px 16px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; flex-shrink: 0; }
         .search-wrap { position: relative; flex: 1; min-width: 180px; max-width: 320px; }
-        .search-wrap svg {
-            position: absolute; left: 10px; top: 50%;
-            transform: translateY(-50%);
-            width: 14px; height: 14px; fill: #9aa0a6;
-        }
-        .search {
-            width: 100%;
-            padding: 7px 10px 7px 32px;
-            border: 1px solid #dadce0;
-            border-radius: 4px;
-            font-size: 13px;
-            font-family: inherit;
-            outline: none;
-        }
+        .search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; fill: #9aa0a6; }
+        .search { width: 100%; padding: 7px 10px 7px 32px; border: 1px solid #dadce0; border-radius: 4px; font-size: 13px; font-family: inherit; outline: none; }
         .search:focus { border-color: #188038; box-shadow: 0 0 0 2px rgba(24,128,56,0.15); }
         .count { font-size: 12px; color: #5f6368; margin-left: auto; }
-        .subtotal-bar {
-            background: #e8f0fe;
-            border-bottom: 2px solid #188038;
-            padding: 8px 16px;
-            display: flex;
-            gap: 24px;
-            align-items: center;
-            flex-wrap: wrap;
-            flex-shrink: 0;
-            font-size: 13px;
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
+        .subtotal-bar { background: #e8f0fe; border-bottom: 2px solid #188038; padding: 8px 16px; display: flex; gap: 24px; align-items: center; flex-wrap: wrap; flex-shrink: 0; font-size: 13px; position: sticky; top: 0; z-index: 50; }
         .subtotal-bar .st-label { font-weight: 600; color: #188038; }
         .subtotal-bar .st-item { display: flex; align-items: center; gap: 6px; }
         .subtotal-bar .st-key { color: #5f6368; font-size: 12px; }
         .subtotal-bar .st-val { font-weight: 600; color: #202124; font-variant-numeric: tabular-nums; }
-        .sheet-wrap {
-            flex: 1;
-            overflow: auto;
-            padding: 0 16px 16px 16px;
-        }
-        .sheet-table {
-            border-collapse: collapse;
-            table-layout: fixed;
-            background: #fff;
-            box-shadow: 0 1px 3px rgba(60,64,67,0.15);
-            width: 100%;
-        }
-        .sheet-table td, .sheet-table th {
-            padding: 5px 8px;
-            font-size: 13px;
-            border: 1px solid #e8eaed;
-            text-align: left;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            vertical-align: middle;
-        }
-        .sheet-table th {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #188038;
-            cursor: pointer;
-            user-select: none;
-            position: sticky;
-            top: 0;
-            z-index: 5;
-        }
+        .sheet-wrap { flex: 1; overflow: auto; padding: 0 16px 16px 16px; }
+        .sheet-table { border-collapse: collapse; table-layout: fixed; background: #fff; box-shadow: 0 1px 3px rgba(60,64,67,0.15); width: 100%; }
+        .sheet-table td, .sheet-table th { padding: 4px 6px; font-size: 13px; border: 1px solid #e8eaed; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
+        .sheet-table th { background: #f8f9fa; font-weight: 600; color: #188038; cursor: pointer; user-select: none; position: sticky; top: 0; z-index: 5; }
         .sheet-table th:hover { background: #e6f4ea; }
         .sheet-table th .sort-icon { float: right; color: #999; font-size: 10px; margin-left: 4px; }
         .sheet-table th.sort-asc .sort-icon::after { content: '▲'; color: #188038; }
         .sheet-table th.sort-desc .sort-icon::after { content: '▼'; color: #188038; }
-        /* Row number column */
-        .sheet-table td:first-child, .sheet-table th:first-child {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #5f6368;
-            width: 44px;
-            text-align: center;
-            position: sticky;
-            left: 0;
-            z-index: 6;
-            border-right: 1px solid #dadce0;
-        }
+        .sheet-table td:first-child, .sheet-table th:first-child { background: #f8f9fa; font-weight: 600; color: #5f6368; width: 44px; text-align: center; position: sticky; left: 0; z-index: 6; border-right: 1px solid #dadce0; }
         .sheet-table th:first-child { z-index: 7; cursor: default; }
-        .loading-screen {
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            height: 50vh; gap: 16px; color: #5f6368;
-        }
-        .spinner {
-            width: 36px; height: 36px;
-            border: 3px solid #e8eaed;
-            border-top-color: #188038;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
+        .loading-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 50vh; gap: 16px; color: #5f6368; }
+        .spinner { width: 36px; height: 36px; border: 3px solid #e8eaed; border-top-color: #188038; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .error-box {
-            margin: 40px auto; max-width: 480px;
-            background: #fce8e8; border: 1px solid #f5c6cb;
-            border-radius: 8px; padding: 20px;
-            text-align: center; color: #721c24;
-        }
-        .toast {
-            position: fixed; bottom: 20px; left: 50%;
-            transform: translateX(-50%) translateY(20px);
-            background: #323232; color: #fff;
-            padding: 10px 20px; border-radius: 8px;
-            font-size: 13px; opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s;
-            z-index: 200;
-        }
+        .error-box { margin: 40px auto; max-width: 480px; background: #fce8e8; border: 1px solid #f5c6cb; border-radius: 8px; padding: 20px; text-align: center; color: #721c24; }
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); background: #323232; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 13px; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 200; }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
         .caption { margin-top: 12px; font-size: 12px; color: #5f6368; text-align: center; }
         .no-results { text-align: center; padding: 40px; color: #5f6368; font-size: 14px; }
-
-        /* Pagination */
-        .pagination-bar {
-            background: #fff;
-            border-top: 1px solid #e8eaed;
-            padding: 10px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
-            flex-shrink: 0;
-            font-size: 13px;
-        }
-        .pagination-bar button {
-            padding: 5px 14px;
-            border: 1px solid #dadce0;
-            background: #fff;
-            border-radius: 4px;
-            font-size: 12px;
-            cursor: pointer;
-        }
+        .pagination-bar { background: #fff; border-top: 1px solid #e8eaed; padding: 10px 16px; display: flex; align-items: center; justify-content: center; gap: 16px; flex-shrink: 0; font-size: 13px; }
+        .pagination-bar button { padding: 5px 14px; border: 1px solid #dadce0; background: #fff; border-radius: 4px; font-size: 12px; cursor: pointer; }
         .pagination-bar button:hover:not(:disabled) { background: #f1f3f4; }
         .pagination-bar button:disabled { opacity: 0.4; cursor: not-allowed; }
-        .page-info { color: #5f6368; font-size: 12px; }
         .page-size { padding: 4px 8px; border: 1px solid #dadce0; border-radius: 4px; font-size: 12px; }
-
-        /* Login Overlay */
-        #loginOverlay {
-            position: fixed; inset: 0; background: #f8f9fa; z-index: 10000;
-            display: flex; align-items: center; justify-content: center;
-            padding: 20px;
-        }
-        .login-card {
-            background: #fff; padding: 40px; border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 380px;
-            text-align: center;
-        }
-        .login-logo {
-            width: 56px; height: 56px; background: #188038; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 20px; color: white; font-weight: 700; font-size: 22px;
-        }
+        #loginOverlay { position: fixed; inset: 0; background: #f8f9fa; z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .login-card { background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 380px; text-align: center; }
+        .login-logo { width: 56px; height: 56px; background: #188038; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: white; font-weight: 700; font-size: 22px; }
         .login-card h2 { margin-bottom: 6px; color: #202124; font-size: 22px; }
         .login-card p { color: #5f6368; font-size: 14px; margin-bottom: 28px; }
-        .login-input {
-            width: 100%; padding: 12px 14px; border: 1px solid #dadce0;
-            border-radius: 6px; margin-bottom: 14px; font-size: 14px;
-            font-family: inherit; outline: none; transition: border 0.15s;
-        }
+        .login-input { width: 100%; padding: 12px 14px; border: 1px solid #dadce0; border-radius: 6px; margin-bottom: 14px; font-size: 14px; font-family: inherit; outline: none; }
         .login-input:focus { border-color: #188038; box-shadow: 0 0 0 3px rgba(24,128,56,0.12); }
-        .login-btn {
-            width: 100%; padding: 12px; background: #188038; color: #fff;
-            border: none; border-radius: 6px; font-size: 14px; font-weight: 600;
-            cursor: pointer; transition: background 0.15s;
-        }
+        .login-btn { width: 100%; padding: 12px; background: #188038; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
         .login-btn:hover { background: #137333; }
-        .login-btn:active { transform: scale(0.98); }
-        .login-error {
-            color: #ea4335; font-size: 13px; margin-top: 12px; display: none;
-        }
-        .login-hint {
-            margin-top: 20px; padding-top: 16px; border-top: 1px solid #e8eaed;
-            font-size: 12px; color: #9aa0a6; line-height: 1.5;
-        }
-
-        @media (max-width: 768px) {
-            .banner { font-size: 15px; padding: 10px; }
-            .topbar { padding: 8px 10px; flex-wrap: wrap; }
-            .title { font-size: 14px; }
-            .btn { padding: 5px 10px; font-size: 11px; }
-            .actions { gap: 4px; }
-            .toolbar { padding: 8px 10px; }
-            .subtotal-bar { padding: 6px 10px; gap: 12px; font-size: 12px; }
-            .search-wrap { max-width: 100%; min-width: 140px; }
-            .sheet-wrap { padding: 0 8px 8px 8px; }
-            .sheet-table td, .sheet-table th { font-size: 12px; padding: 4px 6px; }
-            .sheet-table td:first-child, .sheet-table th:first-child { width: 36px; padding: 4px; }
-            .tab { padding: 8px 14px; font-size: 12px; }
-            .status { display: none; }
-            .count { width: 100%; text-align: right; margin-top: 4px; }
-            .login-card { padding: 28px 20px; }
-            .pagination-bar { gap: 8px; padding: 8px 10px; }
-        }
+        .login-error { color: #ea4335; font-size: 13px; margin-top: 12px; display: none; }
+        .login-hint { margin-top: 20px; padding-top: 16px; border-top: 1px solid #e8eaed; font-size: 12px; color: #9aa0a6; line-height: 1.5; }
+        @media (max-width: 768px) { .banner { font-size: 15px; padding: 10px; } .topbar { padding: 8px 10px; flex-wrap: wrap; } .title { font-size: 14px; } .btn { padding: 5px 10px; font-size: 11px; } .actions { gap: 4px; } .toolbar { padding: 8px 10px; } .subtotal-bar { padding: 6px 10px; gap: 12px; font-size: 12px; } .search-wrap { max-width: 100%; min-width: 140px; } .sheet-wrap { padding: 0 8px 8px 8px; } .sheet-table td, .sheet-table th { font-size: 12px; padding: 3px 5px; } .sheet-table td:first-child, .sheet-table th:first-child { width: 36px; padding: 3px; } .tab { padding: 8px 14px; font-size: 12px; } .status { display: none; } .count { width: 100%; text-align: right; margin-top: 4px; } .login-card { padding: 28px 20px; } .pagination-bar { gap: 8px; padding: 8px 10px; } }
     </style>
-<base target="_blank">
-<base target="_blank">
 </head>
 <body>
-    <!-- LOGIN OVERLAY -->
     <div id="loginOverlay">
         <div class="login-card">
             <div class="login-logo">S</div>
@@ -324,32 +84,21 @@
             <input type="password" class="login-input" id="loginPassword" placeholder="Password" autocomplete="current-password">
             <button class="login-btn" onclick="doLogin()">Sign In</button>
             <div class="login-error" id="loginError">Invalid ID or password</div>
-            <div class="login-hint">
-                <strong>Demo:</strong> ID = <code>demo</code> or <code>DEMO</code> or <code>Demo</code><br>
-                Password = <code>demo123</code><br>
-                <em>(Username is case-insensitive)</em>
-            </div>
+            <div class="login-hint"><strong>Demo:</strong> ID = <code>demo</code> or <code>DEMO</code><br>Password = <code>demo123</code></div>
         </div>
     </div>
-
     <div class="banner" id="banner">Sheet Viewer</div>
-
     <div class="topbar">
         <div class="logo">S</div>
         <div class="title" id="pageTitle">Sheet Viewer</div>
         <div class="actions">
             <button class="btn" onclick="loadSheet()">&#x21bb; Refresh</button>
             <button class="btn primary" onclick="toggleFullscreen()">&#x26F6; Full</button>
-            <button class="btn" onclick="doLogout()" style="border-color:#ea4335; color:#ea4335;">Logout</button>
+            <button class="btn" onclick="doLogout()" style="border-color:#ea4335;color:#ea4335;">Logout</button>
         </div>
-        <div class="status">
-            <span class="status-dot" id="statusDot"></span>
-            <span id="statusText">Loading...</span>
-        </div>
+        <div class="status"><span class="status-dot" id="statusDot"></span><span id="statusText">Loading...</span></div>
     </div>
-
     <div class="tabs" id="tabBar"></div>
-
     <div class="toolbar">
         <div class="search-wrap">
             <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
@@ -357,109 +106,65 @@
         </div>
         <div class="count" id="rowCount">0 rows</div>
     </div>
-
     <div class="subtotal-bar" id="subtotalBar"></div>
-
     <div class="sheet-wrap" id="sheetArea">
-        <div class="loading-screen">
-            <div class="spinner"></div>
-            <div>Please sign in to load data.</div>
-        </div>
+        <div class="loading-screen"><div class="spinner"></div><div>Please sign in to load data.</div></div>
     </div>
-
     <div class="pagination-bar" id="paginationBar" style="display:none;">
         <button onclick="changePage(-1)" id="btnPrev">&#x25C0; Prev</button>
         <span class="page-info" id="pageInfo">Page 1 of 1</span>
         <button onclick="changePage(1)" id="btnNext">Next &#x25B6;</button>
         <select class="page-size" id="pageSize" onchange="changePageSize()">
-            <option value="100">100 / page</option>
-            <option value="250">250 / page</option>
-            <option value="500" selected>500 / page</option>
-            <option value="1000">1000 / page</option>
+            <option value="100">100 / page</option><option value="250">250 / page</option><option value="500" selected>500 / page</option><option value="1000">1000 / page</option>
         </select>
     </div>
-
     <div class="caption" id="caption"></div>
-
     <div class="toast" id="toast"></div>
-
     <script>
-        // ============================================================
-        // USER DATABASE — ADD YOUR USERS HERE
-        // Username is CASE-INSENSITIVE (stored in lowercase)
-        // ============================================================
         const USERS = {
-            'demo': {
-                password: 'demo123',
-                companyName: 'Demo Company',
-                spreadsheetId: '1x0BnUziYQemws3Wd0vzsjGxLBoVeLX02fQzdJ6CEuLg',
-                sheetName: '',      // leave blank for first tab
-                dataRange: ''       // leave blank for all data
-            },
-            // ADD MORE USERS LIKE THIS:
-            // 'user2': {
-            //     password: 'secret456',
-            //     companyName: 'Acme Corp',
-            //     spreadsheetId: 'YOUR_SHEET_ID_HERE',
-            //     sheetName: '',
-            //     dataRange: ''
-            // },
+            'demo': { password: 'demo123', companyName: 'Demo Company', spreadsheetId: '1x0BnUziYQemws3Wd0vzsjGxLBoVeLX02fQzdJ6CEuLg', sheetName: '', dataRange: '' },
         };
-
-        // ============================================================
-        // GLOBAL CONFIG
-        // ============================================================
         const AUTO_REFRESH_MS = 10800000;
-        const API_KEY         = 'AIzaSyBDLyEYzxIbwIfpiZj9745vBhbE0_lRYEk';
+        const API_KEY = 'AIzaSyBDLyEYzxIbwIfpiZj9745vBhbE0_lRYEk';
 
-        let COMPANY_NAME   = 'Sheet Viewer';
+        let COMPANY_NAME = 'Sheet Viewer';
         let SPREADSHEET_ID = '';
-        let SHEET_NAME     = '';
-        let DATA_RANGE     = '';
+        let SHEET_NAME = '';
+        let DATA_RANGE = '';
 
-        const sheetArea    = document.getElementById('sheetArea');
-        const statusText   = document.getElementById('statusText');
-        const statusDot    = document.getElementById('statusDot');
-        const pageTitle    = document.getElementById('pageTitle');
-        const tabBar       = document.getElementById('tabBar');
-        const searchBox    = document.getElementById('searchBox');
-        const rowCount     = document.getElementById('rowCount');
-        const subtotalBar  = document.getElementById('subtotalBar');
-        const paginationBar= document.getElementById('paginationBar');
-        const pageInfo     = document.getElementById('pageInfo');
-        const btnPrev      = document.getElementById('btnPrev');
-        const btnNext      = document.getElementById('btnNext');
+        const sheetArea = document.getElementById('sheetArea');
+        const statusText = document.getElementById('statusText');
+        const statusDot = document.getElementById('statusDot');
+        const pageTitle = document.getElementById('pageTitle');
+        const tabBar = document.getElementById('tabBar');
+        const searchBox = document.getElementById('searchBox');
+        const rowCount = document.getElementById('rowCount');
+        const subtotalBar = document.getElementById('subtotalBar');
+        const paginationBar = document.getElementById('paginationBar');
+        const pageInfo = document.getElementById('pageInfo');
+        const btnPrev = document.getElementById('btnPrev');
+        const btnNext = document.getElementById('btnNext');
 
         let allSheets = [];
-        let spreadsheetName = 'Sheet Viewer';
         let currentIdx = 0;
         let searchTerm = '';
-        let autoTimer  = null;
-
-        // Pagination
+        let autoTimer = null;
         let currentPage = 1;
         let rowsPerPage = 500;
         let totalVisibleRows = [];
-        let allRowData = [];      // cache raw rows for CSV export
-        let allHeader = [];       // cache header for CSV export
-
-        // Sorting
         let sortCol = -1;
-        let sortDir = 0; // 0=none, 1=asc, 2=desc
+        let sortDir = 0;
 
-        // ---------- Login / Logout (CASE-INSENSITIVE) ----------
         function doLogin() {
-            const rawId = document.getElementById('loginId').value.trim();
-            const id = rawId.toLowerCase(); // <-- CASE INSENSITIVE
-            const pass = document.getElementById('loginPassword').value;
-            const user = USERS[id];
-
+            var rawId = document.getElementById('loginId').value.trim();
+            var id = rawId.toLowerCase();
+            var pass = document.getElementById('loginPassword').value;
+            var user = USERS[id];
             if (user && user.password === pass) {
-                COMPANY_NAME    = user.companyName;
-                SPREADSHEET_ID  = user.spreadsheetId;
-                SHEET_NAME      = user.sheetName || '';
-                DATA_RANGE      = user.dataRange || '';
-
+                COMPANY_NAME = user.companyName;
+                SPREADSHEET_ID = user.spreadsheetId;
+                SHEET_NAME = user.sheetName || '';
+                DATA_RANGE = user.dataRange || '';
                 document.getElementById('banner').textContent = COMPANY_NAME;
                 document.getElementById('loginOverlay').style.display = 'none';
                 document.getElementById('loginError').style.display = 'none';
@@ -470,9 +175,7 @@
             }
         }
 
-        function doLogout() {
-            location.reload();
-        }
+        function doLogout() { location.reload(); }
 
         document.getElementById('loginPassword').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') doLogin();
@@ -481,87 +184,94 @@
             if (e.key === 'Enter') document.getElementById('loginPassword').focus();
         });
 
-        // ---------- Fast escapeHtml (NO DOM creation) ----------
         function escapeHtml(text) {
             if (text == null) return '';
-            let str = String(text);
-            let out = '', i = 0, ch;
-            for (; i < str.length; i++) {
-                ch = str.charCodeAt(i);
-                if (ch === 38) { out += '&amp;'; }
-                else if (ch === 60) { out += '&lt;'; }
-                else if (ch === 62) { out += '&gt;'; }
-                else if (ch === 34) { out += '&quot;'; }
-                else if (ch === 39) { out += '&#039;'; }
-                else { out += str.charAt(i); }
+            var str = String(text);
+            var out = '';
+            for (var i = 0; i < str.length; i++) {
+                var ch = str.charCodeAt(i);
+                if (ch === 38) out += '&amp;';
+                else if (ch === 60) out += '&lt;';
+                else if (ch === 62) out += '&gt;';
+                else if (ch === 34) out += '&quot;';
+                else if (ch === 39) out += '&#039;';
+                else out += str.charAt(i);
             }
             return out;
         }
 
-        // ---------- Color & Style Helpers ----------
         function colorToCss(c) {
             if (!c) return null;
-            const r = Math.round((c.red   || 0) * 255);
-            const g = Math.round((c.green || 0) * 255);
-            const b = Math.round((c.blue  || 0) * 255);
-            const a = c.alpha !== undefined ? c.alpha : 1;
-            return a === 1 ? `rgb(${r},${g},${b})` : `rgba(${r},${g},${b},${a})`;
+            var r = Math.round((c.red || 0) * 255);
+            var g = Math.round((c.green || 0) * 255);
+            var b = Math.round((c.blue || 0) * 255);
+            var a = c.alpha !== undefined ? c.alpha : 1;
+            return a === 1 ? 'rgb(' + r + ',' + g + ',' + b + ')' : 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
         }
 
         function buildCellStyle(fmt) {
             if (!fmt) return '';
-            const s = [];
-            const bg = colorToCss(fmt.backgroundColor);
-            if (bg) s.push(`background-color:${bg}`);
-            const tf = fmt.textFormat;
+            var s = [];
+            var bg = colorToCss(fmt.backgroundColor);
+            if (bg) s.push('background-color:' + bg);
+            var tf = fmt.textFormat;
             if (tf) {
                 if (tf.bold) s.push('font-weight:bold');
                 if (tf.italic) s.push('font-style:italic');
-                if (tf.fontSize) s.push(`font-size:${tf.fontSize}pt`);
-                if (tf.fontFamily) s.push(`font-family:"${tf.fontFamily}",sans-serif`);
-                const fg = colorToCss(tf.foregroundColor);
-                if (fg) s.push(`color:${fg}`);
-                const deco = [];
+                if (tf.fontSize) s.push('font-size:' + tf.fontSize + 'pt');
+                if (tf.fontFamily) s.push('font-family:"' + tf.fontFamily + '",sans-serif');
+                var fg = colorToCss(tf.foregroundColor);
+                if (fg) s.push('color:' + fg);
+                var deco = [];
                 if (tf.underline) deco.push('underline');
                 if (tf.strikethrough) deco.push('line-through');
-                if (deco.length) s.push(`text-decoration:${deco.join(' ')}`);
+                if (deco.length) s.push('text-decoration:' + deco.join(' '));
             }
-            if (fmt.horizontalAlignment) s.push(`text-align:${fmt.horizontalAlignment.toLowerCase()}`);
+            if (fmt.horizontalAlignment) s.push('text-align:' + fmt.horizontalAlignment.toLowerCase());
             if (fmt.verticalAlignment) {
-                const vm = {TOP:'top', MIDDLE:'middle', BOTTOM:'bottom'};
-                s.push(`vertical-align:${vm[fmt.verticalAlignment]||'middle'}`);
+                var vm = {TOP:'top', MIDDLE:'middle', BOTTOM:'bottom'};
+                s.push('vertical-align:' + (vm[fmt.verticalAlignment] || 'middle'));
             }
             if (fmt.wrapStrategy === 'WRAP') { s.push('white-space:normal'); s.push('word-wrap:break-word'); }
-            const sides = ['top','bottom','left','right'];
-            const sm = {SOLID:'solid', DOTTED:'dotted', DASHED:'dashed', DOUBLE:'double', SOLID_MEDIUM:'solid', SOLID_THICK:'solid'};
-            sides.forEach(side => {
-                const b = fmt.borders && fmt.borders[side];
+            var sides = ['top','bottom','left','right'];
+            var sm = {SOLID:'solid', DOTTED:'dotted', DASHED:'dashed', DOUBLE:'double', SOLID_MEDIUM:'solid', SOLID_THICK:'solid'};
+            for (var si = 0; si < sides.length; si++) {
+                var side = sides[si];
+                var b = fmt.borders && fmt.borders[side];
                 if (b && b.style && b.style !== 'NONE') {
-                    const w = b.width || (b.style==='SOLID_THICK'?2:b.style==='SOLID_MEDIUM'?1.5:1);
-                    const st = sm[b.style] || 'solid';
-                    const col = colorToCss(b.color) || '#999';
-                    s.push(`border-${side}:${w}px ${st} ${col}`);
+                    var w = b.width || (b.style === 'SOLID_THICK' ? 2 : b.style === 'SOLID_MEDIUM' ? 1.5 : 1);
+                    var st = sm[b.style] || 'solid';
+                    var col = colorToCss(b.color) || '#999';
+                    s.push('border-' + side + ':' + w + 'px ' + st + ' ' + col);
                 }
-            });
+            }
             if (fmt.padding) {
-                const p = fmt.padding;
-                s.push(`padding:${p.top||2}px ${p.right||6}px ${p.bottom||2}px ${p.left||6}px`);
+                var p = fmt.padding;
+                s.push('padding:' + (p.top || 2) + 'px ' + (p.right || 6) + 'px ' + (p.bottom || 2) + 'px ' + (p.left || 6) + 'px');
             }
             return s.join(';');
         }
 
-        // ---------- Merge Processing ----------
         function processMerges(mergeCells, maxRows, maxCols) {
-            const covered = Array.from({length:maxRows},()=>Array(maxCols).fill(false));
-            const mergeInfo = Array.from({length:maxRows},()=>Array(maxCols).fill(null));
-            (mergeCells||[]).forEach(m => {
-                const r = m.range || {};
-                const sr = r.startRowIndex || 0;
-                const er = r.endRowIndex   || maxRows;
-                const sc = r.startColumnIndex || 0;
-                const ec = r.endColumnIndex   || maxCols;
-                for (let row = sr; row < er; row++) {
-                    for (let col = sc; col < ec; col++) {
+            var covered = [];
+            var mergeInfo = [];
+            for (var r = 0; r < maxRows; r++) {
+                covered[r] = [];
+                mergeInfo[r] = [];
+                for (var c = 0; c < maxCols; c++) {
+                    covered[r][c] = false;
+                    mergeInfo[r][c] = null;
+                }
+            }
+            var merges = mergeCells || [];
+            for (var m = 0; m < merges.length; m++) {
+                var rng = merges[m].range || {};
+                var sr = rng.startRowIndex || 0;
+                var er = rng.endRowIndex || maxRows;
+                var sc = rng.startColumnIndex || 0;
+                var ec = rng.endColumnIndex || maxCols;
+                for (var row = sr; row < er; row++) {
+                    for (var col = sc; col < ec; col++) {
                         if (row < maxRows && col < maxCols) covered[row][col] = true;
                     }
                 }
@@ -572,73 +282,74 @@
                         colspan: Math.min(ec, maxCols) - sc
                     };
                 }
-            });
-            return { covered, mergeInfo };
+            }
+            return { covered: covered, mergeInfo: mergeInfo };
         }
 
-        // ---------- Number Parsing ----------
         function parseNumber(str) {
             if (!str) return 0;
-            const cleaned = str.replace(/[$,€£¥%\s]/g, '');
-            const num = parseFloat(cleaned);
+            var cleaned = String(str).replace(/[$,\s]/g, '');
+            var num = parseFloat(cleaned);
             return isNaN(num) ? 0 : num;
         }
 
         function formatNumber(num) {
             if (num === 0) return '0';
-            const isInt = Number.isInteger(num);
-            return num.toLocaleString('en-US', {minimumFractionDigits: isInt?0:2, maximumFractionDigits: 2});
+            var isInt = Number.isInteger(num);
+            return num.toLocaleString('en-US', {minimumFractionDigits: isInt ? 0 : 2, maximumFractionDigits: 2});
         }
 
-        // ---------- Hidden Rows/Cols from API ----------
         function getHiddenCols(columnMetadata) {
-            const hidden = [];
-            (columnMetadata||[]).forEach((meta, idx) => {
-                if (meta.hiddenByUser) hidden.push(idx);
-            });
+            var hidden = [];
+            var meta = columnMetadata || [];
+            for (var i = 0; i < meta.length; i++) {
+                if (meta[i].hiddenByUser) hidden.push(i);
+            }
             return hidden;
         }
 
         function getHiddenRows(rowMetadata) {
-            const hidden = [];
-            (rowMetadata||[]).forEach((meta, idx) => {
-                if (meta.hiddenByUser) hidden.push(idx);
-            });
+            var hidden = [];
+            var meta = rowMetadata || [];
+            for (var i = 0; i < meta.length; i++) {
+                if (meta[i].hiddenByUser) hidden.push(i);
+            }
             return hidden;
         }
 
-        // ---------- Get Frozen Row Count from API ----------
         function getFrozenRowCount(sheetData) {
-            const grid = sheetData.properties && sheetData.properties.gridProperties;
+            var grid = sheetData.properties && sheetData.properties.gridProperties;
             if (grid && grid.frozenRowCount) return grid.frozenRowCount;
-            const data = sheetData.data && sheetData.data[0];
+            var data = sheetData.data && sheetData.data[0];
             if (data && data.rowData) {
-                for (let r = Math.min(3, data.rowData.length - 1); r >= 0; r--) {
-                    const cells = data.rowData[r].values || [];
+                for (var r = Math.min(3, data.rowData.length - 1); r >= 0; r--) {
+                    var cells = data.rowData[r].values || [];
                     if (cells.length === 0) continue;
-                    const textCount = cells.filter(c => {
-                        const v = (c.formattedValue || '').trim();
-                        return v.length > 0 && v.length < 30 && isNaN(parseFloat(v.replace(/[$,\s]/g,''))) && !v.match(/^\d{1,2}[-/]/);
-                    }).length;
+                    var textCount = 0;
+                    for (var ci = 0; ci < cells.length; ci++) {
+                        var v = (cells[ci].formattedValue || '').trim();
+                        if (v.length > 0 && v.length < 30 && isNaN(parseFloat(v.replace(/[$,\s]/g,''))) && !v.match(/^\d{1,2}[-/]/)) {
+                            textCount++;
+                        }
+                    }
                     if (textCount >= Math.max(2, cells.length * 0.5)) return r + 1;
                 }
             }
             return 1;
         }
 
-        // ---------- Detect Numeric Columns (sampled for speed) ----------
         function detectNumericColumns(rows, dataStart, maxCols, hiddenRows) {
-            const numericCols = [];
-            const sampleLimit = Math.min(rows.length, dataStart + 1000);
-            for (let c = 0; c < maxCols; c++) {
-                let numCount = 0, totalCount = 0;
-                for (let r = dataStart; r < sampleLimit; r++) {
-                    if (hiddenRows.includes(r)) continue;
-                    const cell = rows[r].values && rows[r].values[c];
-                    const v = cell ? (cell.formattedValue || '').trim() : '';
+            var numericCols = [];
+            var sampleLimit = Math.min(rows.length, dataStart + 1000);
+            for (var c = 0; c < maxCols; c++) {
+                var numCount = 0, totalCount = 0;
+                for (var r = dataStart; r < sampleLimit; r++) {
+                    if (hiddenRows.indexOf(r) >= 0) continue;
+                    var cell = rows[r].values && rows[r].values[c];
+                    var v = cell ? (cell.formattedValue || '').trim() : '';
                     if (!v) continue;
                     totalCount++;
-                    const cleaned = v.replace(/[$,€£¥%\s]/g, '');
+                    var cleaned = v.replace(/[$,\s]/g, '');
                     if (!isNaN(parseFloat(cleaned)) && isFinite(cleaned)) numCount++;
                 }
                 if (totalCount > 0 && numCount / totalCount >= 0.7) numericCols.push(c);
@@ -646,14 +357,74 @@
             return numericCols;
         }
 
-        // ---------- Pagination ----------
+        function showToast(msg) {
+            var t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(function() { t.classList.remove('show'); }, 2000);
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(function(){});
+                showToast('Fullscreen enabled');
+            } else {
+                document.exitFullscreen();
+                showToast('Fullscreen exited');
+            }
+        }
+
+        function buildTabs() {
+            var html = '';
+            for (var i = 0; i < allSheets.length; i++) {
+                var s = allSheets[i];
+                var title = (s.properties && s.properties.title) || ('Sheet ' + (i + 1));
+                var cls = (i === currentIdx) ? 'tab active' : 'tab';
+                html += '<div class="' + cls + '" data-idx="' + i + '" onclick="switchTab(' + i + ')">' + escapeHtml(title) + '</div>';
+            }
+            tabBar.innerHTML = html;
+        }
+
+        function switchTab(idx) {
+            currentIdx = idx;
+            currentPage = 1;
+            sortCol = -1;
+            sortDir = 0;
+            searchTerm = '';
+            searchBox.value = '';
+            var tabs = document.querySelectorAll('.tab');
+            for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
+            var activeTab = document.querySelector('.tab[data-idx="' + idx + '"]');
+            if (activeTab) activeTab.classList.add('active');
+            renderSheet(idx);
+        }
+
+        function doSearch() {
+            searchTerm = searchBox.value.trim();
+            currentPage = 1;
+            sortCol = -1;
+            sortDir = 0;
+            renderSheet(currentIdx);
+        }
+
+        function doSort(colIdx) {
+            if (sortCol === colIdx) {
+                sortDir = (sortDir + 1) % 3;
+            } else {
+                sortCol = colIdx;
+                sortDir = 1;
+            }
+            currentPage = 1;
+            renderSheet(currentIdx);
+        }
+
         function changePage(delta) {
-            const maxPage = Math.max(1, Math.ceil(totalVisibleRows.length / rowsPerPage));
-            const newPage = currentPage + delta;
+            var maxPage = Math.max(1, Math.ceil(totalVisibleRows.length / rowsPerPage));
+            var newPage = currentPage + delta;
             if (newPage >= 1 && newPage <= maxPage) {
                 currentPage = newPage;
                 renderSheet(currentIdx);
-                document.getElementById('sheetArea').scrollTop = 0;
+                sheetArea.scrollTop = 0;
             }
         }
 
@@ -663,72 +434,42 @@
             renderSheet(currentIdx);
         }
 
-        function updatePagination() {
-            const total = totalVisibleRows.length;
-            if (total <= 100) {
-                paginationBar.style.display = 'none';
-                return;
-            }
-            paginationBar.style.display = 'flex';
-            const maxPage = Math.max(1, Math.ceil(total / rowsPerPage));
-            if (currentPage > maxPage) currentPage = maxPage;
-            pageInfo.textContent = `Page ${currentPage} of ${maxPage} (${total} rows)`;
-            btnPrev.disabled = currentPage <= 1;
-            btnNext.disabled = currentPage >= maxPage;
-        }
-
-        // ---------- CSV Export (hidden button, kept in code) ----------
         function exportCSV() {
-            if (!allRowData.length) {
-                showToast('No data to export');
-                return;
+            if (!allRowData.length) { showToast('No data to export'); return; }
+            var csv = '';
+            for (var i = 0; i < allHeader.length; i++) {
+                csv += '"' + String(allHeader[i]).replace(/"/g, '""') + '"';
+                if (i < allHeader.length - 1) csv += ',';
             }
-            let csv = '';
-            csv += allHeader.map(h => '"' + String(h).replace(/"/g, '""') + '"').join(',') + '
-';
-            totalVisibleRows.forEach(rIdx => {
-                const row = allRowData[rIdx];
-                if (!row) return;
-                csv += row.map(cell => '"' + String(cell).replace(/"/g, '""') + '"').join(',') + '
-';
-            });
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
+            csv += '\n';
+            for (var ri = 0; ri < totalVisibleRows.length; ri++) {
+                var rIdx = totalVisibleRows[ri];
+                var row = allRowData[rIdx];
+                if (!row) continue;
+                for (var ci = 0; ci < row.length; ci++) {
+                    csv += '"' + String(row[ci]).replace(/"/g, '""') + '"';
+                    if (ci < row.length - 1) csv += ',';
+                }
+                csv += '\n';
+            }
+            var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            var link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `${COMPANY_NAME.replace(/\s+/g,'_')}_export.csv`;
+            link.download = COMPANY_NAME.replace(/\s+/g, '_') + '_export.csv';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             showToast('CSV downloaded');
         }
 
-        // ---------- Sorting ----------
-        function doSort(colIdx) {
-            if (sortCol === colIdx) {
-                sortDir = (sortDir + 1) % 3; // none -> asc -> desc -> none
-            } else {
-                sortCol = colIdx;
-                sortDir = 1;
-            }
-            currentPage = 1;
-            renderSheet(currentIdx);
-        }
+        var allRowData = [];
+        var allHeader = [];
 
-        // ---------- Search ----------
-        function doSearch() {
-            searchTerm = searchBox.value.trim();
-            currentPage = 1;
-            sortCol = -1;
-            sortDir = 0;
-            renderSheet(currentIdx);
-        }
-
-        // ---------- Rendering ----------
         function renderSheet(idx) {
-            const sheet = allSheets[idx];
+            var sheet = allSheets[idx];
             if (!sheet) return;
 
-            const data = sheet.data && sheet.data[0];
+            var data = sheet.data && sheet.data[0];
             if (!data || !data.rowData) {
                 sheetArea.innerHTML = '<div class="error-box">No data found in this sheet.</div>';
                 subtotalBar.innerHTML = '';
@@ -736,260 +477,250 @@
                 return;
             }
 
-            const rows = data.rowData;
-            const colMeta = data.columnMetadata || [];
-            const rowMeta = data.rowMetadata || [];
-            const maxCols = Math.max(...rows.map(r => (r.values||[]).length), colMeta.length);
-            const maxRows = rows.length;
-            const colWidths = colMeta.map(m => m.pixelSize || 100);
-            const rowHeights = rowMeta.map(m => m.pixelSize || 21);
-            const mergeCells = sheet.mergeCells || [];
-            const { covered, mergeInfo } = processMerges(mergeCells, maxRows, maxCols);
+            var rows = data.rowData;
+            var colMeta = data.columnMetadata || [];
+            var rowMeta = data.rowMetadata || [];
+            var maxCols = 0;
+            for (var ri = 0; ri < rows.length; ri++) {
+                var len = (rows[ri].values || []).length;
+                if (len > maxCols) maxCols = len;
+            }
+            if (colMeta.length > maxCols) maxCols = colMeta.length;
+            var maxRows = rows.length;
+            var colWidths = [];
+            for (var ci = 0; ci < colMeta.length; ci++) colWidths.push(colMeta[ci].pixelSize || 100);
+            var rowHeights = [];
+            for (var ri = 0; ri < rowMeta.length; ri++) rowHeights.push(rowMeta[ri].pixelSize || 21);
+            var mergeCells = sheet.mergeCells || [];
+            var pm = processMerges(mergeCells, maxRows, maxCols);
+            var covered = pm.covered;
+            var mergeInfo = pm.mergeInfo;
 
-            const hiddenCols = getHiddenCols(colMeta);
-            const hiddenRows = getHiddenRows(rowMeta);
-            const frozenRows = getFrozenRowCount(sheet);
-            const headerRowIdx = Math.min(frozenRows - 1, maxRows - 1);
-            const headerCells = rows[headerRowIdx].values || [];
-            const header = headerCells.map(c => (c.formattedValue || '').trim());
+            var hiddenCols = getHiddenCols(colMeta);
+            var hiddenRows = getHiddenRows(rowMeta);
+            var frozenRows = getFrozenRowCount(sheet);
+            var headerRowIdx = Math.min(frozenRows - 1, maxRows - 1);
+            var headerCells = rows[headerRowIdx].values || [];
+            var header = [];
+            for (var ci = 0; ci < headerCells.length; ci++) {
+                header.push((headerCells[ci].formattedValue || '').trim());
+            }
 
-            const dataStart = headerRowIdx + 1;
-            const numericCols = detectNumericColumns(rows, dataStart, maxCols, hiddenRows);
+            var dataStart = headerRowIdx + 1;
+            var numericCols = detectNumericColumns(rows, dataStart, maxCols, hiddenRows);
 
-            // Build visible rows list + cache for CSV
             totalVisibleRows = [];
             allRowData = [];
             allHeader = header;
 
-            for (let r = dataStart; r < maxRows; r++) {
-                if (hiddenRows.includes(r)) continue;
-                const row = rows[r] || {};
-                const cells = row.values || [];
-                const vals = cells.map(c => (c.formattedValue || '').trim());
+            for (var r = dataStart; r < maxRows; r++) {
+                if (hiddenRows.indexOf(r) >= 0) continue;
+                var row = rows[r] || {};
+                var cells = row.values || [];
+                var vals = [];
+                for (var ci = 0; ci < cells.length; ci++) {
+                    vals.push((cells[ci].formattedValue || '').trim());
+                }
 
-                // Cache raw values for CSV
-                allRowData[r] = cells.map(c => c.formattedValue || '');
+                var rowData = [];
+                for (var ci = 0; ci < cells.length; ci++) {
+                    rowData.push(cells[ci].formattedValue || '');
+                }
+                allRowData[r] = rowData;
 
                 if (searchTerm) {
-                    const term = searchTerm.toLowerCase();
-                    const found = vals.some(v => v.toLowerCase().includes(term));
+                    var term = searchTerm.toLowerCase();
+                    var found = false;
+                    for (var vi = 0; vi < vals.length; vi++) {
+                        if (vals[vi].toLowerCase().indexOf(term) >= 0) { found = true; break; }
+                    }
                     if (!found) continue;
                 }
 
                 totalVisibleRows.push(r);
             }
 
-            // Sort visible rows if requested
             if (sortCol >= 0 && sortDir > 0) {
-                totalVisibleRows.sort((a, b) => {
-                    const cellA = rows[a].values && rows[a].values[sortCol];
-                    const cellB = rows[b].values && rows[b].values[sortCol];
-                    const valA = cellA ? (cellA.formattedValue || '') : '';
-                    const valB = cellB ? (cellB.formattedValue || '') : '';
-                    const numA = parseNumber(valA);
-                    const numB = parseNumber(valB);
+                totalVisibleRows.sort(function(a, b) {
+                    var cellA = rows[a].values && rows[a].values[sortCol];
+                    var cellB = rows[b].values && rows[b].values[sortCol];
+                    var valA = cellA ? (cellA.formattedValue || '') : '';
+                    var valB = cellB ? (cellB.formattedValue || '') : '';
+                    var numA = parseNumber(valA);
+                    var numB = parseNumber(valB);
                     if (numA !== 0 || numB !== 0) {
                         return sortDir === 1 ? numA - numB : numB - numA;
                     }
-                    const strA = valA.toLowerCase();
-                    const strB = valB.toLowerCase();
+                    var strA = valA.toLowerCase();
+                    var strB = valB.toLowerCase();
                     if (strA < strB) return sortDir === 1 ? -1 : 1;
                     if (strA > strB) return sortDir === 1 ? 1 : -1;
                     return 0;
                 });
             }
 
-            // Subtotals
-            const subtotals = new Array(maxCols).fill(null);
+            var subtotals = [];
+            for (var c = 0; c < maxCols; c++) subtotals.push(null);
             if (numericCols.length > 0 && totalVisibleRows.length > 0) {
-                numericCols.forEach(colIdx => {
-                    if (hiddenCols.includes(colIdx)) return;
-                    let sum = 0;
-                    totalVisibleRows.forEach(r => {
-                        const cell = rows[r].values && rows[r].values[colIdx];
+                for (var ni = 0; ni < numericCols.length; ni++) {
+                    var colIdx = numericCols[ni];
+                    if (hiddenCols.indexOf(colIdx) >= 0) continue;
+                    var sum = 0;
+                    for (var ri = 0; ri < totalVisibleRows.length; ri++) {
+                        var rIdx = totalVisibleRows[ri];
+                        var cell = rows[rIdx].values && rows[rIdx].values[colIdx];
                         sum += parseNumber(cell ? cell.formattedValue : '');
-                    });
+                    }
                     subtotals[colIdx] = formatNumber(sum);
-                });
+                }
             }
 
-            let barHtml = '';
+            var barHtml = '';
             if (numericCols.length > 0 && totalVisibleRows.length > 0) {
-                barHtml = `<span class="st-label">Subtotal (${totalVisibleRows.length} rows):</span>`;
-                numericCols.forEach(colIdx => {
-                    if (hiddenCols.includes(colIdx)) return;
+                barHtml = '<span class="st-label">Subtotal (' + totalVisibleRows.length + ' rows):</span>';
+                for (var ni = 0; ni < numericCols.length; ni++) {
+                    var colIdx = numericCols[ni];
+                    if (hiddenCols.indexOf(colIdx) >= 0) continue;
                     if (subtotals[colIdx] !== null) {
-                        const label = header[colIdx] || `Col ${colIdx+1}`;
-                        barHtml += `<span class="st-item"><span class="st-key">${escapeHtml(label)}:</span><span class="st-val">${subtotals[colIdx]}</span></span>`;
+                        var label = header[colIdx] || ('Col ' + (colIdx + 1));
+                        barHtml += '<span class="st-item"><span class="st-key">' + escapeHtml(label) + ':</span><span class="st-val">' + subtotals[colIdx] + '</span></span>';
                     }
-                });
+                }
             } else {
-                barHtml = `<span class="st-label">${totalVisibleRows.length} rows shown</span>`;
+                barHtml = '<span class="st-label">' + totalVisibleRows.length + ' rows shown</span>';
             }
             subtotalBar.innerHTML = barHtml;
 
-            // Pagination slice
-            const startIdx = (currentPage - 1) * rowsPerPage;
-            const pageRows = totalVisibleRows.slice(startIdx, startIdx + rowsPerPage);
+            var startIdx = (currentPage - 1) * rowsPerPage;
+            var pageRows = totalVisibleRows.slice(startIdx, startIdx + rowsPerPage);
 
-            // Build table
-            let html = '<table class="sheet-table">';
-            let stickyOffsets = [0];
-            for (let r = 1; r < frozenRows && r < maxRows; r++) {
-                stickyOffsets.push(stickyOffsets[r-1] + (rowHeights[r-1] || 21));
+            var html = '<table class="sheet-table">';
+            var stickyOffsets = [0];
+            for (var r = 1; r < frozenRows && r < maxRows; r++) {
+                stickyOffsets.push(stickyOffsets[r - 1] + (rowHeights[r - 1] || 21));
             }
 
-            for (let r = 0; r < maxRows; r++) {
-                if (r >= frozenRows && hiddenRows.includes(r)) continue;
-                if (r >= frozenRows && !pageRows.includes(r)) continue;
+            for (var r = 0; r < maxRows; r++) {
+                if (r >= frozenRows && hiddenRows.indexOf(r) >= 0) continue;
+                if (r >= frozenRows && pageRows.indexOf(r) < 0) continue;
 
-                const row = rows[r] || {};
-                const cells = row.values || [];
-                const h = rowHeights[r] || 21;
-                const isFrozen = r < frozenRows;
-                const isHeader = r === headerRowIdx;
+                var row = rows[r] || {};
+                var cells = row.values || [];
+                var h = rowHeights[r] || 21;
+                var isFrozen = r < frozenRows;
+                var isHeader = r === headerRowIdx;
 
-                html += `<tr style="height:${h}px">`;
+                html += '<tr style="height:' + h + 'px">';
 
-                // Row number column
                 if (r >= dataStart) {
-                    const rowNum = totalVisibleRows.indexOf(r) >= 0 ? totalVisibleRows.indexOf(r) + 1 + startIdx : '';
-                    html += `<td style="position:sticky;left:0;z-index:6;background:#f8f9fa;font-weight:600;color:#5f6368;text-align:center;width:44px;border-right:1px solid #dadce0;">${rowNum}</td>`;
+                    var rowNum = startIdx + pageRows.indexOf(r) + 1;
+                    html += '<td style="position:sticky;left:0;z-index:6;background:#f8f9fa;font-weight:600;color:#5f6368;text-align:center;width:44px;border-right:1px solid #dadce0;">' + rowNum + '</td>';
                 } else {
-                    html += `<td style="position:sticky;left:0;z-index:6;background:#f8f9fa;font-weight:600;color:#5f6368;text-align:center;width:44px;border-right:1px solid #dadce0;"></td>`;
+                    html += '<td style="position:sticky;left:0;z-index:6;background:#f8f9fa;font-weight:600;color:#5f6368;text-align:center;width:44px;border-right:1px solid #dadce0;"></td>';
                 }
 
-                for (let c = 0; c < maxCols; c++) {
-                    if (hiddenCols.includes(c)) continue;
+                for (var c = 0; c < maxCols; c++) {
+                    if (hiddenCols.indexOf(c) >= 0) continue;
                     if (covered[r][c]) continue;
 
-                    const cell = cells[c] || {};
-                    const fmt = cell.effectiveFormat;
-                    const val = cell.formattedValue || '';
-                    const style = buildCellStyle(fmt);
-                    const merge = mergeInfo[r][c];
+                    var cell = cells[c] || {};
+                    var fmt = cell.effectiveFormat;
+                    var val = cell.formattedValue || '';
+                    var style = buildCellStyle(fmt);
+                    var merge = mergeInfo[r][c];
 
-                    const attrs = [];
-                    let inlineStyle = style;
+                    var attrs = [];
+                    var inlineStyle = style;
                     if (isFrozen) {
-                        inlineStyle = (inlineStyle ? inlineStyle + ';' : '') + `position:sticky;top:${stickyOffsets[r]}px;z-index:10;`;
+                        inlineStyle = (inlineStyle ? inlineStyle + ';' : '') + 'position:sticky;top:' + stickyOffsets[r] + 'px;z-index:10;';
                     }
                     if (isHeader) {
-                        // Add sort indicator
-                        let thClass = '';
+                        var thClass = '';
                         if (c === sortCol) {
                             thClass = sortDir === 1 ? 'sort-asc' : (sortDir === 2 ? 'sort-desc' : '');
                         }
-                        if (thClass) attrs.push(`class="${thClass}"`);
-                        attrs.push(`onclick="doSort(${c})"`);
-                        attrs.push(`style="${inlineStyle.replace(/"/g,'&quot;')};cursor:pointer;"`);
+                        if (thClass) attrs.push('class="' + thClass + '"');
+                        attrs.push('onclick="doSort(' + c + ')"');
+                        attrs.push('style="' + inlineStyle.replace(/"/g, '&quot;') + ';cursor:pointer;"');
                     } else {
-                        if (inlineStyle) attrs.push(`style="${inlineStyle.replace(/"/g,'&quot;')}"`);
+                        if (inlineStyle) attrs.push('style="' + inlineStyle.replace(/"/g, '&quot;') + '"');
                     }
                     if (merge) {
-                        let visibleSpan = 0;
-                        for (let mc = c; mc < c + merge.colspan && mc < maxCols; mc++) {
-                            if (!hiddenCols.includes(mc)) visibleSpan++;
+                        var visibleSpan = 0;
+                        for (var mc = c; mc < c + merge.colspan && mc < maxCols; mc++) {
+                            if (hiddenCols.indexOf(mc) < 0) visibleSpan++;
                         }
-                        if (visibleSpan > 1) attrs.push(`colspan="${visibleSpan}"`);
-                        if (merge.rowspan > 1) attrs.push(`rowspan="${merge.rowspan}"`);
+                        if (visibleSpan > 1) attrs.push('colspan="' + visibleSpan + '"');
+                        if (merge.rowspan > 1) attrs.push('rowspan="' + merge.rowspan + '"');
                     }
-                    const w = colWidths[c] || 100;
-                    attrs.push(`width="${w}"`);
+                    var w = colWidths[c] || 100;
+                    attrs.push('width="' + w + '"');
 
                     if (isHeader) {
-                        const sortIcon = c === sortCol ? (sortDir === 1 ? '<span class="sort-icon">▲</span>' : (sortDir === 2 ? '<span class="sort-icon">▼</span>' : '<span class="sort-icon">⇅</span>')) : '<span class="sort-icon">⇅</span>';
-                        html += `<th ${attrs.join(' ')}>${escapeHtml(val)}${sortIcon}</th>`;
+                        var sortIcon = '';
+                        if (c === sortCol) {
+                            sortIcon = sortDir === 1 ? '<span class="sort-icon">▲</span>' : (sortDir === 2 ? '<span class="sort-icon">▼</span>' : '<span class="sort-icon">⇅</span>');
+                        } else {
+                            sortIcon = '<span class="sort-icon">⇅</span>';
+                        }
+                        html += '<th ' + attrs.join(' ') + '>' + escapeHtml(val) + sortIcon + '</th>';
                     } else {
-                        html += `<td ${attrs.join(' ')}>${escapeHtml(val)}</td>`;
+                        html += '<td ' + attrs.join(' ') + '>' + escapeHtml(val) + '</td>';
                     }
                 }
                 html += '</tr>';
             }
 
             html += '</table>';
-            const hrs = Math.round(AUTO_REFRESH_MS / 3600000);
-            const showingFrom = totalVisibleRows.length > 0 ? startIdx + 1 : 0;
-            const showingTo = Math.min(startIdx + rowsPerPage, totalVisibleRows.length);
-            html += `<div class="caption">Showing ${showingFrom}-${showingTo} of ${totalVisibleRows.length} filtered rows (${maxRows - dataStart} total data rows). Hidden rows/cols excluded. Auto-refresh: every ${hrs} hour${hrs>1?'s':''}.</div>`;
+            var hrs = Math.round(AUTO_REFRESH_MS / 3600000);
+            var showingFrom = totalVisibleRows.length > 0 ? startIdx + 1 : 0;
+            var showingTo = Math.min(startIdx + rowsPerPage, totalVisibleRows.length);
+            html += '<div class="caption">Showing ' + showingFrom + '-' + showingTo + ' of ' + totalVisibleRows.length + ' filtered rows (' + (maxRows - dataStart) + ' total data rows). Hidden rows/cols excluded. Auto-refresh: every ' + hrs + ' hour' + (hrs > 1 ? 's' : '') + '.</div>';
             sheetArea.innerHTML = html;
-            rowCount.textContent = `${totalVisibleRows.length} rows`;
+            rowCount.textContent = totalVisibleRows.length + ' rows';
 
-            updatePagination();
-        }
-
-        function buildTabs() {
-            let html = '';
-            allSheets.forEach((s, i) => {
-                const title = s.properties && s.properties.title || `Sheet ${i+1}`;
-                const cls = i === currentIdx ? 'tab active' : 'tab';
-                html += `<div class="${cls}" data-idx="${i}" onclick="switchTab(${i})">${escapeHtml(title)}</div>`;
-            });
-            tabBar.innerHTML = html;
-        }
-
-        function switchTab(idx) {
-            currentIdx = idx;
-            currentPage = 1;
-            sortCol = -1;
-            sortDir = 0;
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelector(`.tab[data-idx="${idx}"]`).classList.add('active');
-            renderSheet(idx);
-        }
-
-        // ---------- Actions ----------
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 2000);
-        }
-
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(() => {});
-                showToast('Fullscreen enabled');
+            var total = totalVisibleRows.length;
+            if (total > 100) {
+                paginationBar.style.display = 'flex';
+                var maxPage = Math.max(1, Math.ceil(total / rowsPerPage));
+                if (currentPage > maxPage) currentPage = maxPage;
+                pageInfo.textContent = 'Page ' + currentPage + ' of ' + maxPage + ' (' + total + ' rows)';
+                btnPrev.disabled = currentPage <= 1;
+                btnNext.disabled = currentPage >= maxPage;
             } else {
-                document.exitFullscreen();
-                showToast('Fullscreen exited');
+                paginationBar.style.display = 'none';
             }
         }
 
-        // ---------- API Fetch ----------
         async function loadSheet() {
-            sheetArea.innerHTML = `
-                <div class="loading-screen">
-                    <div class="spinner"></div>
-                    <div>Fetching data from Google Sheets API...</div>
-                </div>`;
+            sheetArea.innerHTML = '<div class="loading-screen"><div class="spinner"></div><div>Fetching data from Google Sheets API...</div></div>';
             subtotalBar.innerHTML = '';
             paginationBar.style.display = 'none';
             statusText.textContent = 'Loading...';
             statusDot.className = 'status-dot';
 
             try {
-                let url;
+                var url;
                 if (DATA_RANGE) {
-                    const range = SHEET_NAME ? `${SHEET_NAME}!${DATA_RANGE}` : DATA_RANGE;
-                    url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}?includeGridData=true&ranges=${encodeURIComponent(range)}&key=${API_KEY}`;
+                    var range = SHEET_NAME ? (SHEET_NAME + '!' + DATA_RANGE) : DATA_RANGE;
+                    url = 'https://sheets.googleapis.com/v4/spreadsheets/' + SPREADSHEET_ID + '?includeGridData=true&ranges=' + encodeURIComponent(range) + '&key=' + API_KEY;
                 } else {
-                    url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}?includeGridData=true&key=${API_KEY}`;
-                    if (SHEET_NAME) url += `&ranges=${encodeURIComponent(SHEET_NAME)}`;
+                    url = 'https://sheets.googleapis.com/v4/spreadsheets/' + SPREADSHEET_ID + '?includeGridData=true&key=' + API_KEY;
+                    if (SHEET_NAME) url += '&ranges=' + encodeURIComponent(SHEET_NAME);
                 }
 
-                const res = await fetch(url);
-                const data = await res.json();
+                var res = await fetch(url);
+                var data = await res.json();
 
                 if (!res.ok) {
-                    throw new Error(data.error && data.error.message ? data.error.message : `HTTP ${res.status}`);
+                    throw new Error((data.error && data.error.message) ? data.error.message : ('HTTP ' + res.status));
                 }
                 if (!data.sheets || !data.sheets.length) {
                     throw new Error('No sheets found in this spreadsheet.');
                 }
 
-                spreadsheetName = data.properties && data.properties.title || 'Sheet Viewer';
-                pageTitle.textContent = spreadsheetName;
+                var spName = (data.properties && data.properties.title) || 'Sheet Viewer';
+                pageTitle.textContent = spName;
 
                 allSheets = data.sheets;
                 currentIdx = 0;
@@ -999,26 +730,18 @@
                 buildTabs();
                 renderSheet(0);
 
-                statusText.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+                statusText.textContent = 'Last updated: ' + new Date().toLocaleTimeString();
                 statusDot.className = 'status-dot';
 
                 if (autoTimer) clearInterval(autoTimer);
                 if (AUTO_REFRESH_MS > 0) {
-                    autoTimer = setInterval(() => loadSheet(), AUTO_REFRESH_MS);
+                    autoTimer = setInterval(function() { loadSheet(); }, AUTO_REFRESH_MS);
                 }
 
             } catch (err) {
                 statusDot.className = 'status-dot error';
                 statusText.textContent = 'Error';
-                sheetArea.innerHTML = `
-                    <div class="error-box">
-                        <strong>Failed to load sheet</strong><br><br>
-                        ${escapeHtml(err.message)}<br><br>
-                        <small>1. Make sure the sheet is published or shared publicly</small><br>
-                        <small>2. Double-check your Spreadsheet ID and API Key</small><br>
-                        <small>3. Verify the Google Sheets API is enabled in Cloud Console</small>
-                    </div>
-                `;
+                sheetArea.innerHTML = '<div class="error-box"><strong>Failed to load sheet</strong><br><br>' + escapeHtml(err.message) + '<br><br><small>1. Make sure the sheet is published or shared publicly</small><br><small>2. Double-check your Spreadsheet ID and API Key</small><br><small>3. Verify the Google Sheets API is enabled in Cloud Console</small></div>';
                 subtotalBar.innerHTML = '';
                 paginationBar.style.display = 'none';
                 console.error(err);
