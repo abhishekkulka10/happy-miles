@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sheet Viewer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #f8f9fa;
+            color: #202124;
+            overflow-x: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .banner {
+            background: #188038;
+            color: #fff;
+            text-align: center;
+            padding: 14px 16px;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            flex-shrink: 0;
+        }
+        .topbar {
+            background: #fff;
+            border-bottom: 1px solid #dadce0;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+            box-shadow: 0 1px 2px rgba(60,64,67,0.1);
+        }
+        .topbar .logo {
+            width: 34px; height: 34px;
+            background: #188038;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 700; font-size: 15px;
+            flex-shrink: 0;
+        }
+        .topbar .title { font-size: 16px; font-weight: 500; }
+        .topbar .actions {
+            margin-left: auto;
+            display: flex; gap: 6px; align-items: center;
+        }
+        .btn {
+            padding: 6px 14px;
+            border: 1px solid #dadce0;
+            background: #fff;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #3c4043;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.15s;
+        }
+        .btn:hover { background: #f1f3f4; border-color: #bdc1c6; }
+        .btn:active { background: #e8eaed; transform: scale(0.97); }
+        .btn.primary { background: #188038; color: #fff; border-color: #137333; }
+        .btn.primary:hover { background: #137333; }
+        .status {
+            font-size: 12px; color: #5f6368;
+            display: flex; align-items: center; gap: 6px;
+            margin-left: 8px;
+        }
+        .status-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: #34a853; animation: pulse 2s infinite;
+        }
+        .status-dot.error { background: #ea4335; animation: none; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        .tabs {
+            background: #fff;
+            border-bottom: 1px solid #dadce0;
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            flex-shrink: 0;
+            overflow-x: auto;
+        }
+        .tab {
+            padding: 10px 20px;
+            font-size: 13px;
+            color: #5f6368;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            transition: all 0.15s;
+        }
+        .tab:hover { background: #f1f3f4; color: #202124; }
+        .tab.active { color: #188038; border-bottom-color: #188038; font-weight: 500; background: #e6f4ea; }
+        .toolbar {
+            background: #fff;
+            border-bottom: 1px solid #e8eaed;
+            padding: 10px 16px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
+        .search-wrap { position: relative; flex: 1; min-width: 180px; max-width: 320px; }
+        .search-wrap svg {
+            position: absolute; left: 10px; top: 50%;
+            transform: translateY(-50%);
+            width: 14px; height: 14px; fill: #9aa0a6;
+        }
+        .search {
+            width: 100%;
+            padding: 7px 10px 7px 32px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+        }
+        .search:focus { border-color: #188038; box-shadow: 0 0 0 2px rgba(24,128,56,0.15); }
+        .filter {
+            padding: 7px 12px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            background: #fff;
+            color: #3c4043;
+            cursor: pointer;
+            outline: none;
+            min-width: 140px;
+        }
+        .filter:focus { border-color: #188038; }
+        .count { font-size: 12px; color: #5f6368; margin-left: auto; }
+        .subtotal-bar {
+            background: #e8f0fe;
+            border-bottom: 2px solid #188038;
+            padding: 8px 16px;
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+            font-size: 13px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .subtotal-bar .st-label { font-weight: 600; color: #188038; }
+        .subtotal-bar .st-item { display: flex; align-items: center; gap: 6px; }
+        .subtotal-bar .st-key { color: #5f6368; font-size: 12px; }
+        .subtotal-bar .st-val { font-weight: 600; color: #202124; font-variant-numeric: tabular-nums; }
+        .sheet-wrap {
+            flex: 1;
+            overflow: auto;
+            padding: 0 16px 16px 16px;
+        }
+        .sheet-table {
+            border-collapse: collapse;
+            table-layout: fixed;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(60,64,67,0.15);
+            width: 100%;
+        }
+        .sheet-table td {
+            padding: 3px 6px;
+            font-size: 13px;
+            line-height: 1.4;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+        .loading-screen {
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            height: 50vh; gap: 16px; color: #5f6368;
+        }
+        .spinner {
+            width: 36px; height: 36px;
+            border: 3px solid #e8eaed;
+            border-top-color: #188038;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .error-box {
+            margin: 40px auto; max-width: 480px;
+            background: #fce8e8; border: 1px solid #f5c6cb;
+            border-radius: 8px; padding: 20px;
+            text-align: center; color: #721c24;
+        }
+        .toast {
+            position: fixed; bottom: 20px; left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #323232; color: #fff;
+            padding: 10px 20px; border-radius: 8px;
+            font-size: 13px; opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s;
+            z-index: 200;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .caption { margin-top: 12px; font-size: 12px; color: #5f6368; text-align: center; }
+        .dark body { background: #1a1a2e; color: #e0e0e0; }
+        .dark .topbar, .dark .toolbar, .dark .tabs { background: #16213e; border-color: #0f3460; }
+        .dark .search, .dark .filter { background: #1a1a2e; border-color: #0f3460; color: #e0e0e0; }
+        .dark .sheet-table { background: #16213e; }
+        .dark .sheet-table td { border-color: #0f3460; color: #e0e0e0; }
+        .dark .tab { color: #a0a0a0; }
+        .dark .tab:hover { background: #0f3460; color: #fff; }
+        .dark .tab.active { background: #188038; color: #fff; }
+        .dark .btn { background: #16213e; border-color: #0f3460; color: #e0e0e0; }
+        .dark .btn:hover { background: #0f3460; }
+        .dark .btn.primary { background: #188038; border-color: #137333; }
+        .dark .count { color: #a0a0a0; }
+        .dark .caption { color: #a0a0a0; }
+        .dark .subtotal-bar { background: #0f3460; border-bottom-color: #188038; }
+        .dark .subtotal-bar .st-key { color: #a0a0a0; }
+        .dark .subtotal-bar .st-val { color: #e0e0e0; }
+        @media (max-width: 768px) {
+            .banner { font-size: 15px; padding: 10px; }
+            .topbar { padding: 8px 10px; flex-wrap: wrap; }
+            .title { font-size: 14px; }
+            .btn { padding: 5px 10px; font-size: 11px; }
+            .actions { gap: 4px; }
+            .toolbar { padding: 8px 10px; }
+            .subtotal-bar { padding: 6px 10px; gap: 12px; font-size: 12px; }
+            .search-wrap { max-width: 100%; min-width: 140px; }
+            .sheet-wrap { padding: 0 8px 8px 8px; }
+            .sheet-table td { font-size: 12px; padding: 2px 4px; }
+            .tab { padding: 8px 14px; font-size: 12px; }
+            .status { display: none; }
+            .count { width: 100%; text-align: right; margin-top: 4px; }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <div class="banner" id="banner">Sheet Viewer</div>
+
+    <div class="topbar">
+        <div class="logo">S</div>
+        <div class="title" id="pageTitle">Sheet Viewer</div>
+        <div class="actions">
+            <button class="btn" onclick="loadSheet()">&#x21bb; Refresh</button>
+            <button class="btn" onclick="toggleDark()">&#x263D; Dark</button>
+            <button class="btn primary" onclick="toggleFullscreen()">&#x26F6; Full</button>
+        </div>
+        <div class="status">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">Loading...</span>
+        </div>
+    </div>
+
+    <div class="tabs" id="tabBar"></div>
+
+    <div class="toolbar">
+        <div class="search-wrap">
+            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input type="text" class="search" id="searchBox" placeholder="Search all columns..." oninput="doSearch()">
+        </div>
+        <select class="filter" id="filterBox" onchange="doFilter()">
+            <option value="all">All Rows</option>
+        </select>
+        <div class="count" id="rowCount">0 rows</div>
+    </div>
+
+    <div class="subtotal-bar" id="subtotalBar"></div>
+
+    <div class="sheet-wrap" id="sheetArea">
+        <div class="loading-screen">
+            <div class="spinner"></div>
+            <div>Fetching data from Google Sheets API...</div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ============================================================
+        // CONFIG: EDIT THESE LINES ONLY
+        // ============================================================
+        const COMPANY_NAME    = 'Happy Miles';
+        const AUTO_REFRESH_MS = 10800000;
+        const SPREADSHEET_ID  = '1x0BnUziYQemws3Wd0vzsjGxLBoVeLX02fQzdJ6CEuLg';
+        const API_KEY         = 'AIzaSyBDLyEYzxIbwIfpiZj9745vBhbE0_lRYEk';
+        const SHEET_NAME      = '';
+        const DATA_RANGE      = '';
+        // ============================================================
+
+        document.getElementById('banner').textContent = COMPANY_NAME;
+
+        const sheetArea    = document.getElementById('sheetArea');
+        const statusText   = document.getElementById('statusText');
+        const statusDot    = document.getElementById('statusDot');
+        const pageTitle    = document.getElementById('pageTitle');
+        const tabBar       = document.getElementById('tabBar');
+        const filterBox    = document.getElementById('filterBox');
+        const searchBox    = document.getElementById('searchBox');
+        const rowCount     = document.getElementById('rowCount');
+        const subtotalBar  = document.getElementById('subtotalBar');
+
+        let allSheets = [];
+        let spreadsheetName = 'Sheet Viewer';
+        let currentIdx = 0;
+        let searchTerm = '';
+        let filterVal  = 'all';
+        let isDark     = false;
+        let autoTimer  = null;
+
+        // ---------- Color & Style Helpers ----------
+        function colorToCss(c) {
+            if (!c) return null;
+            const r = Math.round((c.red   || 0) * 255);
+            const g = Math.round((c.green || 0) * 255);
+            const b = Math.round((c.blue  || 0) * 255);
+            const a = c.alpha !== undefined ? c.alpha : 1;
+            return a === 1 ? `rgb(${r},${g},${b})` : `rgba(${r},${g},${b},${a})`;
+        }
+
+        function buildCellStyle(fmt) {
+            if (!fmt) return '';
+            const s = [];
+            const bg = colorToCss(fmt.backgroundColor);
+            if (bg) s.push(`background-color:${bg}`);
+            const tf = fmt.textFormat;
+            if (tf) {
+                if (tf.bold) s.push('font-weight:bold');
+                if (tf.italic) s.push('font-style:italic');
+                if (tf.fontSize) s.push(`font-size:${tf.fontSize}pt`);
+                if (tf.fontFamily) s.push(`font-family:"${tf.fontFamily}",sans-serif`);
+                const fg = colorToCss(tf.foregroundColor);
+                if (fg) s.push(`color:${fg}`);
+                const deco = [];
+                if (tf.underline) deco.push('underline');
+                if (tf.strikethrough) deco.push('line-through');
+                if (deco.length) s.push(`text-decoration:${deco.join(' ')}`);
+            }
+            if (fmt.horizontalAlignment) s.push(`text-align:${fmt.horizontalAlignment.toLowerCase()}`);
+            if (fmt.verticalAlignment) {
+                const vm = {TOP:'top', MIDDLE:'middle', BOTTOM:'bottom'};
+                s.push(`vertical-align:${vm[fmt.verticalAlignment]||'middle'}`);
+            }
+            if (fmt.wrapStrategy === 'WRAP') { s.push('white-space:normal'); s.push('word-wrap:break-word'); }
+            const sides = ['top','bottom','left','right'];
+            const sm = {SOLID:'solid', DOTTED:'dotted', DASHED:'dashed', DOUBLE:'double', SOLID_MEDIUM:'solid', SOLID_THICK:'solid'};
+            sides.forEach(side => {
+                const b = fmt.borders && fmt.borders[side];
+                if (b && b.style && b.style !== 'NONE') {
+                    const w = b.width || (b.style==='SOLID_THICK'?2:b.style==='SOLID_MEDIUM'?1.5:1);
+                    const st = sm[b.style] || 'solid';
+                    const col = colorToCss(b.color) || '#999';
+                    s.push(`border-${side}:${w}px ${st} ${col}`);
+                }
+            });
+            if (fmt.padding) {
+                const p = fmt.padding;
+                s.push(`padding:${p.top||2}px ${p.right||6}px ${p.bottom||2}px ${p.left||6}px`);
+            }
+            return s.join(';');
+        }
+
+        // ---------- Merge Processing ----------
+        function processMerges(mergeCells, maxRows, maxCols) {
+            const covered = Array.from({length:maxRows},()=>Array(maxCols).fill(false));
+            const mergeInfo = Array.from({length:maxRows},()=>Array(maxCols).fill(null));
+            (mergeCells||[]).forEach(m => {
+                const r = m.range || {};
+                const sr = r.startRowIndex || 0;
+                const er = r.endRowIndex   || maxRows;
+                const sc = r.startColumnIndex || 0;
+                const ec = r.endColumnIndex   || maxCols;
+                for (let row = sr; row < er; row++) {
+                    for (let col = sc; col < ec; col++) {
+                        if (row < maxRows && col < maxCols) covered[row][col] = true;
+                    }
+                }
+                if (sr < maxRows && sc < maxCols) {
+                    covered[sr][sc] = false;
+                    mergeInfo[sr][sc] = {
+                        rowspan: Math.min(er, maxRows) - sr,
+                        colspan: Math.min(ec, maxCols) - sc
+                    };
+                }
+            });
+            return { covered, mergeInfo };
+        }
+
+        function escapeHtml(text) {
+            const d = document.createElement('div');
+            d.textContent = text;
+            return d.innerHTML;
+        }
+
+        // ---------- Number Parsing ----------
+        function parseNumber(str) {
+            if (!str) return 0;
+            const cleaned = str.replace(/[$,€£¥%\s]/g, '');
+            const num = parseFloat(cleaned);
+            return isNaN(num) ? 0 : num;
+        }
+
+        function formatNumber(num) {
+            if (num === 0) return '0';
+            const isInt = Number.isInteger(num);
+            return num.toLocaleString('en-US', {minimumFractionDigits: isInt?0:2, maximumFractionDigits: 2});
+        }
+
+        // ---------- Hidden Rows/Cols from API ----------
+        function getHiddenCols(columnMetadata) {
+            const hidden = [];
+            (columnMetadata||[]).forEach((meta, idx) => {
+                if (meta.hiddenByUser) hidden.push(idx);
+            });
+            return hidden;
+        }
+
+        function getHiddenRows(rowMetadata) {
+            const hidden = [];
+            (rowMetadata||[]).forEach((meta, idx) => {
+                if (meta.hiddenByUser) hidden.push(idx);
+            });
+            return hidden;
+        }
+
+        // ---------- Get Frozen Row Count from API ----------
+        function getFrozenRowCount(sheetData) {
+            const grid = sheetData.properties && sheetData.properties.gridProperties;
+            if (grid && grid.frozenRowCount) return grid.frozenRowCount;
+            const data = sheetData.data && sheetData.data[0];
+            if (data && data.rowData) {
+                // Fallback: find header row
+                for (let r = Math.min(3, data.rowData.length - 1); r >= 0; r--) {
+                    const cells = data.rowData[r].values || [];
+                    if (cells.length === 0) continue;
+                    const textCount = cells.filter(c => {
+                        const v = (c.formattedValue || '').trim();
+                        return v.length > 0 && v.length < 30 && isNaN(parseFloat(v.replace(/[$,\s]/g,''))) && !v.match(/^\d{1,2}[-/]/);
+                    }).length;
+                    if (textCount >= Math.max(2, cells.length * 0.5)) return r + 1;
+                }
+            }
+            return 1;
+        }
+
+        // ---------- Filter Logic ----------
+        function getFilterColumnIndex(header) {
+            const h = header.map(x => (x||'').toLowerCase());
+            const idx = h.findIndex(x => x.includes('status'));
+            if (idx >= 0) return idx;
+            return h.length - 1;
+        }
+
+        function getUniqueFilterValues(sheetData, headerRowIdx, hiddenRows) {
+            const data = sheetData.data && sheetData.data[0];
+            if (!data || !data.rowData) return [];
+            const rows = data.rowData;
+            const dataStart = headerRowIdx + 1;
+            if (dataStart >= rows.length) return [];
+            let colIdx = rows[headerRowIdx].values ? rows[headerRowIdx].values.length - 1 : 0;
+            const headerCells = rows[headerRowIdx].values || [];
+            const header = headerCells.map(c => (c.formattedValue || '').toLowerCase());
+            const statusIdx = header.findIndex(h => h.includes('status'));
+            if (statusIdx >= 0) colIdx = statusIdx;
+            const vals = new Set();
+            for (let i = dataStart; i < rows.length; i++) {
+                if (hiddenRows.includes(i)) continue;
+                const cell = rows[i].values && rows[i].values[colIdx];
+                const v = cell ? (cell.formattedValue || '').trim() : '';
+                if (v) vals.add(v);
+            }
+            return Array.from(vals).sort();
+        }
+
+        function populateFilter(sheetData, headerRowIdx, hiddenRows) {
+            const options = getUniqueFilterValues(sheetData, headerRowIdx, hiddenRows);
+            let html = '<option value="all">All Rows</option>';
+            options.forEach(opt => {
+                html += `<option value="${escapeHtml(opt)}">${escapeHtml(opt)}</option>`;
+            });
+            filterBox.innerHTML = html;
+            if (filterVal !== 'all' && options.includes(filterVal)) {
+                filterBox.value = filterVal;
+            } else {
+                filterVal = 'all';
+                filterBox.value = 'all';
+            }
+        }
+
+        // ---------- Detect Numeric Columns ----------
+        function detectNumericColumns(rows, dataStart, maxCols, hiddenRows) {
+            const numericCols = [];
+            for (let c = 0; c < maxCols; c++) {
+                let numCount = 0, totalCount = 0;
+                for (let r = dataStart; r < rows.length; r++) {
+                    if (hiddenRows.includes(r)) continue;
+                    const cell = rows[r].values && rows[r].values[c];
+                    const v = cell ? (cell.formattedValue || '').trim() : '';
+                    if (!v) continue;
+                    totalCount++;
+                    const cleaned = v.replace(/[$,€£¥%\s]/g, '');
+                    if (!isNaN(parseFloat(cleaned)) && isFinite(cleaned)) numCount++;
+                }
+                if (totalCount > 0 && numCount / totalCount >= 0.7) numericCols.push(c);
+            }
+            return numericCols;
+        }
+
+        // ---------- Rendering ----------
+        function renderSheet(idx) {
+            const sheet = allSheets[idx];
+            if (!sheet) return;
+
+            const data = sheet.data && sheet.data[0];
+            if (!data || !data.rowData) {
+                sheetArea.innerHTML = '<div class="error-box">No data found in this sheet.</div>';
+                subtotalBar.innerHTML = '';
+                return;
+            }
+
+            const rows = data.rowData;
+            const colMeta = data.columnMetadata || [];
+            const rowMeta = data.rowMetadata || [];
+            const maxCols = Math.max(...rows.map(r => (r.values||[]).length), colMeta.length);
+            const maxRows = rows.length;
+            const colWidths = colMeta.map(m => m.pixelSize || 100);
+            const rowHeights = rowMeta.map(m => m.pixelSize || 21);
+            const mergeCells = sheet.mergeCells || [];
+            const { covered, mergeInfo } = processMerges(mergeCells, maxRows, maxCols);
+
+            // Hidden rows/cols from API
+            const hiddenCols = getHiddenCols(colMeta);
+            const hiddenRows = getHiddenRows(rowMeta);
+
+            // Frozen rows
+            const frozenRows = getFrozenRowCount(sheet);
+
+            // Header row
+            const headerRowIdx = Math.min(frozenRows - 1, maxRows - 1);
+            const headerCells = rows[headerRowIdx].values || [];
+            const header = headerCells.map(c => (c.formattedValue || '').trim());
+
+            // Populate filter
+            populateFilter(sheet, headerRowIdx, hiddenRows);
+            const filterCol = getFilterColumnIndex(header);
+
+            // Detect numeric columns
+            const dataStart = headerRowIdx + 1;
+            const numericCols = detectNumericColumns(rows, dataStart, maxCols, hiddenRows);
+
+            // Determine visible data rows
+            let visibleRows = [];
+            for (let r = dataStart; r < maxRows; r++) {
+                if (hiddenRows.includes(r)) continue;
+                const row = rows[r] || {};
+                const cells = row.values || [];
+                const vals = cells.map(c => (c.formattedValue || '').trim());
+
+                if (filterVal !== 'all') {
+                    const fv = (cells[filterCol] ? (cells[filterCol].formattedValue || '') : '').trim();
+                    if (fv !== filterVal) continue;
+                }
+
+                if (searchTerm) {
+                    const term = searchTerm.toLowerCase();
+                    const found = vals.some(v => v.toLowerCase().includes(term));
+                    if (!found) continue;
+                }
+
+                visibleRows.push(r);
+            }
+
+            // Calculate subtotals for sticky bar
+            const subtotals = new Array(maxCols).fill(null);
+            if (numericCols.length > 0 && visibleRows.length > 0) {
+                numericCols.forEach(colIdx => {
+                    if (hiddenCols.includes(colIdx)) return;
+                    let sum = 0;
+                    visibleRows.forEach(r => {
+                        const cell = rows[r].values && rows[r].values[colIdx];
+                        sum += parseNumber(cell ? cell.formattedValue : '');
+                    });
+                    subtotals[colIdx] = formatNumber(sum);
+                });
+            }
+
+            // Build subtotal bar
+            let barHtml = '';
+            if (numericCols.length > 0 && visibleRows.length > 0) {
+                barHtml = `<span class="st-label">Subtotal (${visibleRows.length} rows):</span>`;
+                numericCols.forEach(colIdx => {
+                    if (hiddenCols.includes(colIdx)) return;
+                    if (subtotals[colIdx] !== null) {
+                        const label = header[colIdx] || `Col ${colIdx+1}`;
+                        barHtml += `<span class="st-item"><span class="st-key">${escapeHtml(label)}:</span><span class="st-val">${subtotals[colIdx]}</span></span>`;
+                    }
+                });
+            } else {
+                barHtml = `<span class="st-label">${visibleRows.length} rows shown</span>`;
+            }
+            subtotalBar.innerHTML = barHtml;
+
+            // Build table — skip hidden columns and rows
+            let html = '<table class="sheet-table">';
+
+            // Calculate cumulative sticky offsets for frozen rows
+            let stickyOffsets = [0];
+            for (let r = 1; r < frozenRows && r < maxRows; r++) {
+                stickyOffsets.push(stickyOffsets[r-1] + (rowHeights[r-1] || 21));
+            }
+
+            for (let r = 0; r < maxRows; r++) {
+                // Skip hidden rows (except frozen rows which are always shown)
+                if (r >= frozenRows && hiddenRows.includes(r)) continue;
+                // Skip data rows filtered out
+                if (r >= frozenRows && !visibleRows.includes(r)) continue;
+
+                const row = rows[r] || {};
+                const cells = row.values || [];
+                const h = rowHeights[r] || 21;
+                const isFrozen = r < frozenRows;
+
+                html += `<tr style="height:${h}px">`;
+
+                for (let c = 0; c < maxCols; c++) {
+                    // Skip hidden columns
+                    if (hiddenCols.includes(c)) continue;
+                    if (covered[r][c]) continue;
+
+                    const cell = cells[c] || {};
+                    const fmt = cell.effectiveFormat;
+                    const val = cell.formattedValue || '';
+                    const style = buildCellStyle(fmt);
+                    const merge = mergeInfo[r][c];
+
+                    const attrs = [];
+                    let inlineStyle = style;
+                    if (isFrozen) {
+                        inlineStyle = (inlineStyle ? inlineStyle + ';' : '') + `position:sticky;top:${stickyOffsets[r]}px;z-index:10;`;
+                    }
+                    if (inlineStyle) attrs.push(`style="${inlineStyle.replace(/"/g,'&quot;')}"`);
+                    if (merge) {
+                        // Adjust colspan for hidden columns within the merge
+                        let visibleSpan = 0;
+                        for (let mc = c; mc < c + merge.colspan && mc < maxCols; mc++) {
+                            if (!hiddenCols.includes(mc)) visibleSpan++;
+                        }
+                        if (visibleSpan > 1) attrs.push(`colspan="${visibleSpan}"`);
+                        if (merge.rowspan > 1) attrs.push(`rowspan="${merge.rowspan}"`);
+                    }
+                    const w = colWidths[c] || 100;
+                    attrs.push(`width="${w}"`);
+
+                    html += `<td ${attrs.join(' ')}>${escapeHtml(val)}</td>`;
+                }
+                html += '</tr>';
+            }
+
+            html += '</table>';
+            const hrs = Math.round(AUTO_REFRESH_MS / 3600000);
+            html += `<div class="caption">Showing ${visibleRows.length} data rows of ${maxRows - dataStart} total. Hidden rows/cols excluded. Auto-refresh: every ${hrs} hour${hrs>1?'s':''}.</div>`;
+            sheetArea.innerHTML = html;
+            rowCount.textContent = `${visibleRows.length} rows`;
+        }
+
+        function buildTabs() {
+            let html = '';
+            allSheets.forEach((s, i) => {
+                const title = s.properties && s.properties.title || `Sheet ${i+1}`;
+                const cls = i === currentIdx ? 'tab active' : 'tab';
+                html += `<div class="${cls}" data-idx="${i}" onclick="switchTab(${i})">${escapeHtml(title)}</div>`;
+            });
+            tabBar.innerHTML = html;
+        }
+
+        function switchTab(idx) {
+            currentIdx = idx;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tab[data-idx="${idx}"]`).classList.add('active');
+            renderSheet(idx);
+        }
+
+        // ---------- Actions ----------
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
+
+        function doSearch() {
+            searchTerm = searchBox.value.trim();
+            renderSheet(currentIdx);
+        }
+
+        function doFilter() {
+            filterVal = filterBox.value;
+            renderSheet(currentIdx);
+        }
+
+        function toggleDark() {
+            isDark = !isDark;
+            document.body.classList.toggle('dark', isDark);
+            showToast(isDark ? 'Dark mode enabled' : 'Light mode enabled');
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+                showToast('Fullscreen enabled');
+            } else {
+                document.exitFullscreen();
+                showToast('Fullscreen exited');
+            }
+        }
+
+        // ---------- API Fetch ----------
+        async function loadSheet() {
+            sheetArea.innerHTML = `
+                <div class="loading-screen">
+                    <div class="spinner"></div>
+                    <div>Fetching data from Google Sheets API...</div>
+                </div>`;
+            subtotalBar.innerHTML = '';
+            statusText.textContent = 'Loading...';
+            statusDot.className = 'status-dot';
+
+            try {
+                let url;
+                if (DATA_RANGE) {
+                    const range = SHEET_NAME ? `${SHEET_NAME}!${DATA_RANGE}` : DATA_RANGE;
+                    url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}?includeGridData=true&ranges=${encodeURIComponent(range)}&key=${API_KEY}`;
+                } else {
+                    url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}?includeGridData=true&key=${API_KEY}`;
+                    if (SHEET_NAME) url += `&ranges=${encodeURIComponent(SHEET_NAME)}`;
+                }
+
+                const res = await fetch(url);
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.error && data.error.message ? data.error.message : `HTTP ${res.status}`);
+                }
+                if (!data.sheets || !data.sheets.length) {
+                    throw new Error('No sheets found in this spreadsheet.');
+                }
+
+                // Auto-set page title from spreadsheet name
+                spreadsheetName = data.properties && data.properties.title || 'Sheet Viewer';
+                pageTitle.textContent = spreadsheetName;
+
+                allSheets = data.sheets;
+                currentIdx = 0;
+                buildTabs();
+                renderSheet(0);
+
+                statusText.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+                statusDot.className = 'status-dot';
+
+                if (autoTimer) clearInterval(autoTimer);
+                if (AUTO_REFRESH_MS > 0) {
+                    autoTimer = setInterval(() => loadSheet(), AUTO_REFRESH_MS);
+                }
+
+            } catch (err) {
+                statusDot.className = 'status-dot error';
+                statusText.textContent = 'Error';
+                sheetArea.innerHTML = `
+                    <div class="error-box">
+                        <strong>Failed to load sheet</strong><br><br>
+                        ${escapeHtml(err.message)}<br><br>
+                        <small>1. Make sure the sheet is published or shared publicly</small><br>
+                        <small>2. Double-check your Spreadsheet ID and API Key</small><br>
+                        <small>3. Verify the Google Sheets API is enabled in Cloud Console</small>
+                    </div>
+                `;
+                subtotalBar.innerHTML = '';
+                console.error(err);
+            }
+        }
+
+        // Start
+        loadSheet();
+    </script>
+</body>
+</html>
