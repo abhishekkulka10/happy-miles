@@ -237,173 +237,52 @@
             .status { display: none; }
             .count { width: 100%; text-align: right; margin-top: 4px; }
         }
-    
-        /* Login overlay */
-        #loginOverlay {
-            position: fixed; inset: 0; background: #f8f9fa; z-index: 10000;
-            display: flex; align-items: center; justify-content: center;
-            padding: 20px;
-        }
-        .login-card {
-            background: #fff; padding: 40px; border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 380px;
-            text-align: center;
-        }
-        .login-logo {
-            width: 56px; height: 56px; background: #188038; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 20px; color: white; font-weight: 700; font-size: 22px;
-        }
-        .login-card h2 { margin-bottom: 6px; color: #202124; font-size: 22px; }
-        .login-card p { color: #5f6368; font-size: 14px; margin-bottom: 28px; }
-        .login-input {
-            width: 100%; padding: 12px 14px; border: 1px solid #dadce0;
-            border-radius: 6px; margin-bottom: 14px; font-size: 14px;
-            font-family: inherit; outline: none; transition: border 0.15s;
-        }
-        .login-input:focus { border-color: #188038; box-shadow: 0 0 0 3px rgba(24,128,56,0.12); }
-        .login-btn {
-            width: 100%; padding: 12px; background: #188038; color: #fff;
-            border: none; border-radius: 6px; font-size: 14px; font-weight: 600;
-            cursor: pointer; transition: background 0.15s;
-        }
-        .login-btn:hover { background: #137333; }
-        .login-btn:active { transform: scale(0.98); }
-        .login-error {
-            color: #ea4335; font-size: 13px; margin-top: 12px; display: none;
-        }
-        .login-hint {
-            margin-top: 20px; padding-top: 16px; border-top: 1px solid #e8eaed;
-            font-size: 12px; color: #9aa0a6; line-height: 1.5;
-        }
-        /* Install bar */
-        .install-bar {
-            background: #e8f0fe;
-            border: 1px solid #188038;
-            border-radius: 8px;
-            padding: 10px 16px;
-            margin: 10px 16px 0 16px;
-            display: none;
-            align-items: center;
-            gap: 12px;
-            font-size: 13px;
-            flex-shrink: 0;
-        }
-        .install-bar.show { display: flex; }
-        .install-bar button {
-            margin-left: auto;
-            background: #188038;
-            color: #fff;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 4px;
-            font-size: 12px;
-            cursor: pointer;
-        }
-</style>
+    </style>
 <base target="_blank">
-
-    <meta name="theme-color" content="#188038">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="#188038">
-    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjogIlNoZWV0IFZpZXdlciIsICJzaG9ydF9uYW1lIjogIlNoZWV0cyIsICJzdGFydF91cmwiOiAiLiIsICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLCAiYmFja2dyb3VuZF9jb2xvciI6ICIjZjhmOWZhIiwgInRoZW1lX2NvbG9yIjogIiMxODgwMzgiLCAiaWNvbnMiOiBbeyJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxOTInIGhlaWdodD0nMTkyJyUzRSUzQ3JlY3Qgd2lkdGg9JzE5MicgaGVpZ2h0PScxOTInIGZpbGw9JyUyMzE4ODAzOCcgcng9JzI0Jy8lM0UlM0N0ZXh0IHg9Jzk2JyB5PScxMzAnIGZvbnQtc2l6ZT0nMTEwJyBmaWxsPSd3aGl0ZScgdGV4dC1hbmNob3I9J21pZGRsZScgZm9udC1mYW1pbHk9J0FyaWFsLHNhbnMtc2VyaWYnIGZvbnQtd2VpZ2h0PSdib2xkJyUzRVMlM0MvdGV4dCUzRSUzQy9zdmclM0UiLCAic2l6ZXMiOiAiMTkyeDE5MiIsICJ0eXBlIjogImltYWdlL3N2Zyt4bWwifV19">
 </head>
 <body>
-        <div id="loginOverlay">
-        <div class="login-card">
-            <div class="login-logo">S</div>
-            <h2>Sheet Viewer</h2>
-            <p>Enter your ID and password to view your data.</p>
-            <input type="text" class="login-input" id="loginId" placeholder="User ID" autocomplete="username">
-            <input type="password" class="login-input" id="loginPassword" placeholder="Password" autocomplete="current-password">
-            <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
-            <div class="login-error" id="loginError">Invalid ID or password</div>
-            <div class="login-hint">
-                <strong>Demo:</strong> ID = <code>demo</code> , Password = <code>demo123</code><br>
-                Add your own users in the CONFIG section of the code.
-            </div>
+    <div class="banner" id="banner">Sheet Viewer</div>
+
+    <div class="topbar">
+        <div class="logo">S</div>
+        <div class="title" id="pageTitle">Sheet Viewer</div>
+        <div class="actions">
+            <button class="btn" onclick="loadSheet()">&#x21bb; Refresh</button>
+            <button class="btn" onclick="toggleDark()">&#x263D; Dark</button>
+            <button class="btn primary" onclick="toggleFullscreen()">&#x26F6; Full</button>
+        </div>
+        <div class="status">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">Loading...</span>
         </div>
     </div>
 
+    <div class="tabs" id="tabBar"></div>
 
-    <div class="install-bar" id="installBar">
-        <span>&#128242; Add Sheet Viewer to your home screen</span>
-        <button onclick="promptInstall()">Install App</button>
-    </div><script>
-                // ============================================================
-        // USER DATABASE
+    <div class="toolbar">
+        <div class="search-wrap">
+            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input type="text" class="search" id="searchBox" placeholder="Search all columns..." oninput="doSearch()">
+        </div>
+        <select class="filter" id="filterBox" onchange="doFilter()">
+            <option value="all">All Rows</option>
+        </select>
+        <div class="count" id="rowCount">0 rows</div>
+    </div>
+
+    <div class="subtotal-bar" id="subtotalBar"></div>
+
+    <div class="sheet-wrap" id="sheetArea">
+        <div class="loading-screen">
+            <div class="spinner"></div>
+            <div>Fetching data from Google Sheets API...</div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
         // ============================================================
-        const USERS = {
-            'demo': {
-                password: 'demo123',
-                companyName: 'Demo Company',
-                spreadsheetId: '1x0BnUziYQemws3Wd0vzsjGxLBoVeLX02fQzdJ6CEuLg',
-                sheetName: '',
-                dataRange: ''
-            },
-        };
-
-        let deferredPrompt = null;
-        if ('serviceWorker' in navigator) {
-            try {
-                const swCode = "self.addEventListener('install',function(e){e.waitUntil(caches.open('sv1').then(function(c){return c.addAll(['./']);}));self.skipWaiting();});self.addEventListener('activate',function(e){self.clients.claim();});self.addEventListener('fetch',function(e){e.respondWith(caches.match(e.request).then(function(r){return r||fetch(e.request);}));});";
-                navigator.serviceWorker.register(URL.createObjectURL(new Blob([swCode],{type:'application/javascript'})));
-            } catch(e) { console.log('SW skip', e); }
-        }
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('installBar').classList.add('show');
-        });
-        function promptInstall() {
-            if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then(() => { deferredPrompt = null; }); }
-        }
-
-        function doLogin() {
-            const id = document.getElementById('loginId').value.trim().toLowerCase();
-            const pass = document.getElementById('loginPassword').value;
-            const btn = document.getElementById('loginBtn');
-            const err = document.getElementById('loginError');
-
-            const user = USERS[id];
-            if (!user) {
-                err.textContent = 'User ID not found';
-                err.style.display = 'block';
-                return;
-            }
-            if (user.password !== pass) {
-                err.textContent = 'Wrong password';
-                err.style.display = 'block';
-                return;
-            }
-
-            btn.disabled = true;
-            btn.textContent = 'Loading...';
-            err.style.display = 'none';
-
-            document.getElementById('banner').textContent = user.companyName;
-            document.getElementById('loginOverlay').style.display = 'none';
-
-            // Set config and load
-            SPREADSHEET_ID = user.spreadsheetId;
-            SHEET_NAME = user.sheetName || '';
-            DATA_RANGE = user.dataRange || '';
-
-            loadSheet();
-        }
-
-        function doLogout() {
-            location.reload();
-        }
-
-        document.getElementById('loginPassword').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') doLogin();
-        });
-        document.getElementById('loginId').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') document.getElementById('loginPassword').focus();
-        });
-
-// ============================================================
         // CONFIG: EDIT THESE LINES ONLY
         // ============================================================
         const COMPANY_NAME    = 'Happy Miles';
@@ -906,7 +785,7 @@
         }
 
         // Start
-        
+        loadSheet();
     </script>
 </body>
 </html>
