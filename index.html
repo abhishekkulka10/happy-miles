@@ -63,31 +63,15 @@
         .login-btn:hover { background: #137333; }
         .login-error { color: #ea4335; font-size: 12px; margin-top: 10px; display: none; }
 
-        /* General Layout */
-        .banner {
-            background: #188038; color: #fff; text-align: center;
-            padding: 14px 16px; font-size: 18px; font-weight: 600;
-            letter-spacing: 0.3px; flex-shrink: 0;
-        }
-        .topbar {
-            background: #fff; border-bottom: 1px solid #dadce0;
-            padding: 10px 16px; display: flex; align-items: center;
-            gap: 12px; flex-shrink: 0; box-shadow: 0 1px 2px rgba(60,64,67,0.1);
-        }
-        .topbar .logo {
-            width: 34px; height: 34px; background: #188038; border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: 700; font-size: 15px; flex-shrink: 0;
-            overflow: hidden;
-        }
+        /* Main UI Styling */
+        .banner { background: #188038; color: #fff; text-align: center; padding: 14px 16px; font-size: 18px; font-weight: 600; flex-shrink: 0; }
+        .topbar { background: #fff; border-bottom: 1px solid #dadce0; padding: 10px 16px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; box-shadow: 0 1px 2px rgba(60,64,67,0.1); }
+        .topbar .logo { width: 34px; height: 34px; background: #188038; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 15px; flex-shrink: 0; overflow: hidden; }
         .topbar .logo img { width: 100%; height: 100%; object-fit: cover; }
         .topbar .title { font-size: 16px; font-weight: 500; }
         .topbar .actions { margin-left: auto; display: flex; gap: 6px; align-items: center; }
-        .btn {
-            padding: 8px 14px; border: 1px solid #dadce0; background: #fff;
-            border-radius: 6px; font-size: 12px; cursor: pointer; color: #3c4043;
-            display: inline-flex; align-items: center; gap: 5px; transition: all 0.15s;
-        }
+        
+        .btn { padding: 8px 14px; border: 1px solid #dadce0; background: #fff; border-radius: 6px; font-size: 12px; cursor: pointer; color: #3c4043; display: inline-flex; align-items: center; gap: 5px; transition: all 0.15s; }
         .btn:hover { background: #f1f3f4; border-color: #bdc1c6; }
         .btn:active { background: #e8eaed; transform: scale(0.97); }
         .btn.primary { background: #188038; color: #fff; border-color: #137333; }
@@ -97,17 +81,8 @@
         .status-dot.error { background: #ea4335; animation: none; }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
         
-        /* Mobile Touch Tabs */
-        .tabs { 
-            background: #fff; border-bottom: 1px solid #dadce0; 
-            display: flex; align-items: center; padding: 0 8px; 
-            flex-shrink: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; 
-        }
-        .tab { 
-            padding: 12px 20px; font-size: 13px; color: #5f6368; 
-            cursor: pointer; border-bottom: 3px solid transparent; 
-            white-space: nowrap; transition: all 0.15s; 
-        }
+        .tabs { background: #fff; border-bottom: 1px solid #dadce0; display: flex; align-items: center; padding: 0 8px; flex-shrink: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .tab { padding: 12px 20px; font-size: 13px; color: #5f6368; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.15s; }
         .tab:hover { background: #f1f3f4; color: #202124; }
         .tab.active { color: #188038; border-bottom-color: #188038; font-weight: 500; background: #e6f4ea; }
         
@@ -117,7 +92,6 @@
         .search { width: 100%; padding: 9px 10px 9px 32px; border: 1px solid #dadce0; border-radius: 6px; font-size: 14px; outline: none; }
         .search:focus { border-color: #188038; box-shadow: 0 0 0 2px rgba(24,128,56,0.15); }
         .filter { padding: 9px 12px; border: 1px solid #dadce0; border-radius: 6px; font-size: 14px; background: #fff; color: #3c4043; outline: none; min-width: 130px; }
-        .filter:focus { border-color: #188038; }
         .count { font-size: 12px; color: #5f6368; margin-left: auto; }
         
         .subtotal-bar { background: #e8f0fe; border-bottom: 2px solid #188038; padding: 8px 16px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; flex-shrink: 0; font-size: 13px; position: sticky; top: 0; z-index: 50; }
@@ -126,7 +100,6 @@
         .subtotal-bar .st-key { color: #5f6368; font-size: 12px; }
         .subtotal-bar .st-val { font-weight: 600; color: #202124; font-variant-numeric: tabular-nums; }
         
-        /* Smooth Mobile Table Area */
         .sheet-wrap { flex: 1; overflow: auto; padding: 0 16px 16px 16px; -webkit-overflow-scrolling: touch; }
         .sheet-table { border-collapse: collapse; table-layout: fixed; background: #fff; box-shadow: 0 1px 3px rgba(60,64,67,0.15); width: 100%; }
         .sheet-table td { padding: 6px 8px; font-size: 13px; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; }
@@ -146,36 +119,23 @@
         .dark .sheet-table { background: #16213e; }
         .dark .sheet-table td { border-color: #0f3460; color: #e0e0e0; }
         .dark .tab { color: #a0a0a0; }
-        .dark .tab:hover { background: #0f3460; color: #fff; }
         .dark .tab.active { background: #188038; color: #fff; }
         .dark .btn { background: #16213e; border-color: #0f3460; color: #e0e0e0; }
-        .dark .btn:hover { background: #0f3460; }
-        .dark .btn.primary { background: #188038; border-color: #137333; }
-        .dark .count { color: #a0a0a0; }
-        .dark .caption { color: #a0a0a0; }
         .dark .subtotal-bar { background: #0f3460; border-bottom-color: #188038; }
-        .dark .subtotal-bar .st-key { color: #a0a0a0; }
-        .dark .subtotal-bar .st-val { color: #e0e0e0; }
         .dark .login-card { background: #16213e; color: #e0e0e0; }
-        .dark .login-card h2 { color: #4caf50; }
-        .dark .login-card p { color: #a0a0a0; }
-        .dark .input-group label { color: #a0a0a0; }
         .dark .input-group input { background: #1a1a2e; border-color: #0f3460; color: #e0e0e0; }
 
-        /* Mobile Adjustments */
         @media (max-width: 768px) {
             .banner { font-size: 15px; padding: 10px; }
             .topbar { padding: 8px 10px; }
             .topbar .title { font-size: 14px; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
             .btn { padding: 6px 10px; font-size: 11px; }
-            .actions { gap: 4px; }
             .toolbar { padding: 8px 10px; }
             .subtotal-bar { padding: 8px 10px; gap: 8px; font-size: 11px; }
             .search-wrap { width: 100%; max-width: 100%; flex: none; }
             .filter { flex: 1; }
             .sheet-wrap { padding: 0 4px 4px 4px; }
             .sheet-table td { font-size: 12px; padding: 5px 6px; }
-            .tab { padding: 10px 14px; font-size: 12px; }
             .status { display: none; }
         }
     </style>
@@ -186,14 +146,14 @@
         <div class="login-card">
             <h2>Happy Miles Login</h2>
             <p>Enter your credentials to access your sheet</p>
-            <form onsubmit="handleLogin(event); return false;">
+            <form id="loginForm">
                 <div class="input-group">
                     <label for="username">Username</label>
-                    <input type="text" id="username" required autocomplete="off">
+                    <input type="text" id="username" required autocomplete="username">
                 </div>
                 <div class="input-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" required autocomplete="off">
+                    <input type="password" id="password" required autocomplete="current-password">
                 </div>
                 <button type="submit" class="login-btn">Sign In</button>
                 <div class="login-error" id="loginError">Invalid username or password</div>
@@ -209,10 +169,10 @@
         </div>
         <div class="title" id="pageTitle">Happy Miles</div>
         <div class="actions">
-            <button class="btn" onclick="loadSheet()">&#x21bb; Refresh</button>
-            <button class="btn" onclick="toggleDark()">&#x263D;</button>
-            <button class="btn primary" id="pwaInstallBtn" style="display:none;" onclick="installPWA()">&#x293B; Install App</button>
-            <button class="btn" onclick="logout()">Logout</button>
+            <button class="btn" id="refreshBtn">&#x21bb; Refresh</button>
+            <button class="btn" id="themeBtn">&#x263D;</button>
+            <button class="btn primary" id="pwaInstallBtn" style="display:none;">&#x293B; Install App</button>
+            <button class="btn" id="logoutBtn">Logout</button>
         </div>
         <div class="status">
             <span class="status-dot" id="statusDot"></span>
@@ -225,9 +185,9 @@
     <div class="toolbar">
         <div class="search-wrap">
             <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-            <input type="text" class="search" id="searchBox" placeholder="Search all columns..." oninput="doSearch()">
+            <input type="text" class="search" id="searchBox" placeholder="Search all columns...">
         </div>
-        <select class="filter" id="filterBox" onchange="doFilter()">
+        <select class="filter" id="filterBox">
             <option value="all">All Rows</option>
         </select>
         <div class="count" id="rowCount">0 rows</div>
@@ -244,7 +204,7 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        // Register Service Worker for PWA
+        // Service Worker for PWA
         let deferredPrompt;
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed', err));
@@ -257,7 +217,7 @@
             if (btn) btn.style.display = 'inline-flex';
         });
 
-        function installPWA() {
+        document.getElementById('pwaInstallBtn').addEventListener('click', () => {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then((choiceResult) => {
@@ -267,7 +227,7 @@
                     deferredPrompt = null;
                 });
             }
-        }
+        });
 
         // ============================================================
         // CONFIG & USER MAPPING
@@ -320,35 +280,36 @@
         const loginOverlay = document.getElementById('loginOverlay');
         const loginError   = document.getElementById('loginError');
 
-        let SPREADSHEET_ID = '';
-        let allSheets = [];
+        let activeUserKey   = localStorage.getItem('hm_user') || '';
+        let allSheets       = [];
         let spreadsheetName = 'Happy Miles';
-        let currentIdx = 0;
-        let searchTerm = '';
-        let filterVal  = 'all';
-        let isDark     = false;
-        let autoTimer  = null;
+        let currentIdx      = 0;
+        let searchTerm      = '';
+        let filterVal       = 'all';
+        let isDark          = false;
+        let autoTimer       = null;
 
-        function handleLogin(e) {
-            if (e && e.preventDefault) e.preventDefault();
-            
-            // Reset error display prior to checking credentials
+        // Guaranteed Form Event Listener
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
             loginError.style.display = 'none';
 
             const u = document.getElementById('username').value.trim().toLowerCase();
             const p = document.getElementById('password').value.trim();
 
             if (USER_CONFIG[u] && USER_CONFIG[u].password === p) {
-                SPREADSHEET_ID = USER_CONFIG[u].spreadsheetId;
+                activeUserKey = u;
+                localStorage.setItem('hm_user', u);
                 loginOverlay.style.display = 'none';
                 loadSheet();
             } else {
                 loginError.style.display = 'block';
             }
-        }
+        });
 
-        function logout() {
-            SPREADSHEET_ID = '';
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            activeUserKey = '';
+            localStorage.removeItem('hm_user');
             allSheets = [];
             if (autoTimer) clearInterval(autoTimer);
             sheetArea.innerHTML = '<div class="loading-screen"><div>Please log in to view data.</div></div>';
@@ -361,7 +322,12 @@
             document.getElementById('password').value = '';
             loginError.style.display = 'none';
             loginOverlay.style.display = 'flex';
-        }
+        });
+
+        document.getElementById('refreshBtn').addEventListener('click', loadSheet);
+        document.getElementById('themeBtn').addEventListener('click', toggleDark);
+        searchBox.addEventListener('input', doSearch);
+        filterBox.addEventListener('change', doFilter);
 
         function colorToCss(c) {
             if (!c) return null;
@@ -704,7 +670,8 @@
         function switchTab(idx) {
             currentIdx = idx;
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelector(`.tab[data-idx="${idx}"]`).classList.add('active');
+            const activeTab = document.querySelector(`.tab[data-idx="${idx}"]`);
+            if (activeTab) activeTab.classList.add('active');
             renderSheet(idx);
         }
 
@@ -732,7 +699,12 @@
         }
 
         async function loadSheet() {
-            if (!SPREADSHEET_ID) return;
+            if (!activeUserKey || !USER_CONFIG[activeUserKey]) {
+                loginOverlay.style.display = 'flex';
+                return;
+            }
+
+            const SPREADSHEET_ID = USER_CONFIG[activeUserKey].spreadsheetId;
 
             sheetArea.innerHTML = `
                 <div class="loading-screen">
@@ -795,6 +767,16 @@
                 console.error(err);
             }
         }
+
+        // Auto Login initialization check on launch
+        window.addEventListener('DOMContentLoaded', () => {
+            if (activeUserKey && USER_CONFIG[activeUserKey]) {
+                loginOverlay.style.display = 'none';
+                loadSheet();
+            } else {
+                loginOverlay.style.display = 'flex';
+            }
+        });
     </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'happy-miles-v1';
+const CACHE_NAME = 'happy-miles-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -13,7 +13,6 @@ self.addEventListener('install', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  // Pass Google API requests directly to the network without caching
   if (e.request.url.includes('googleapis.com')) {
     e.respondWith(fetch(e.request));
     return;
