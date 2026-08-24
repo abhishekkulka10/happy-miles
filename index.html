@@ -187,18 +187,18 @@
         <div class="login-card">
             <h2>Happy Miles Login</h2>
             <p>Enter your credentials to access your sheet</p>
-            <form onsubmit="handleLogin(event)">
+            <div>
                 <div class="input-group">
                     <label for="username">Username</label>
-                    <input type="text" id="username" required autocomplete="username">
+                    <input type="text" id="username" autocomplete="username">
                 </div>
                 <div class="input-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" required autocomplete="current-password">
+                    <input type="password" id="password" autocomplete="current-password">
                 </div>
-                <button type="submit" class="login-btn">Sign In</button>
+                <button type="button" class="login-btn" id="loginBtn">Sign In</button>
                 <div class="login-error" id="loginError">Invalid username or password</div>
-            </form>
+            </div>
         </div>
     </div>
 
@@ -280,6 +280,14 @@
         const DATA_RANGE      = '';
 
         const USER_CONFIG = {
+            'user1': {
+                password: 'password123',
+                spreadsheetId: '1x0BnUziYQemws3Wd0vzsjGxLBoVeLX02fQzdJ6CEuLg'
+            },
+            'user2': {
+                password: 'password456',
+                spreadsheetId: 'ANOTHER_SPREADSHEET_ID_HERE'
+            }
             'admin': {
                 password: 'abhishek',
                 spreadsheetId: '1GW7reZMUtYDoc-26DeIBs4bOSM31k8U0JfKidozbkOs'
@@ -312,6 +320,8 @@
         const subtotalBar  = document.getElementById('subtotalBar');
         const loginOverlay = document.getElementById('loginOverlay');
         const loginError   = document.getElementById('loginError');
+        const loginBtn     = document.getElementById('loginBtn');
+        const passwordInput = document.getElementById('password');
 
         let SPREADSHEET_ID = '';
         let allSheets = [];
@@ -322,8 +332,7 @@
         let isDark     = false;
         let autoTimer  = null;
 
-        function handleLogin(e) {
-            e.preventDefault();
+        function handleLogin() {
             const u = document.getElementById('username').value.trim();
             const p = document.getElementById('password').value.trim();
 
@@ -336,6 +345,11 @@
                 loginError.style.display = 'block';
             }
         }
+
+        loginBtn.addEventListener('click', handleLogin);
+        passwordInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') handleLogin();
+        });
 
         function logout() {
             SPREADSHEET_ID = '';
