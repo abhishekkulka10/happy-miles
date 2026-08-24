@@ -245,7 +245,7 @@
             },
             'user2': {
                 password: 'password456',
-                spreadsheetId: 'ANOTHER_SPREADSHEET_ID_HERE'
+                spreadsheetId: '1s6ArloJX8LfzUaNXQbq7WMI0d--N2P93yuQOvtGx8qE'
             }
             'admin': {
                 password: 'abhishek',
@@ -289,23 +289,30 @@
         let isDark          = false;
         let autoTimer       = null;
 
-        // Guaranteed Form Event Listener
+        // Login Form Handler
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             loginError.style.display = 'none';
 
-            const u = document.getElementById('username').value.trim().toLowerCase();
+            const rawUser = document.getElementById('username').value.trim();
             const p = document.getElementById('password').value.trim();
+            
+            // Case-insensitive user lookup
+            const userKey = Object.keys(USER_CONFIG).find(k => k.toLowerCase() === rawUser.toLowerCase());
 
-            if (USER_CONFIG[u] && USER_CONFIG[u].password === p) {
-                activeUserKey = u;
-                localStorage.setItem('hm_user', u);
+            if (userKey && USER_CONFIG[userKey].password === p) {
+                activeUserKey = userKey;
+                localStorage.setItem('hm_user', userKey);
                 loginOverlay.style.display = 'none';
                 loadSheet();
             } else {
                 loginError.style.display = 'block';
             }
         });
+
+        // Clear error text dynamically on input
+        document.getElementById('username').addEventListener('input', () => { loginError.style.display = 'none'; });
+        document.getElementById('password').addEventListener('input', () => { loginError.style.display = 'none'; });
 
         document.getElementById('logoutBtn').addEventListener('click', () => {
             activeUserKey = '';
@@ -768,15 +775,21 @@
             }
         }
 
-        // Auto Login initialization check on launch
-        window.addEventListener('DOMContentLoaded', () => {
+        // Guaranteed App Initialization
+        function initApp() {
             if (activeUserKey && USER_CONFIG[activeUserKey]) {
                 loginOverlay.style.display = 'none';
                 loadSheet();
             } else {
                 loginOverlay.style.display = 'flex';
             }
-        });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
     </script>
 </body>
 </html>
