@@ -3,84 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#188038">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="#188038">
-    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjogIlNoZWV0IFZpZXdlciIsICJzaG9ydF9uYW1lIjogIlNoZWV0cyIsICJzdGFydF91cmwiOiAiLiIsICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLCAiYmFja2dyb3VuZF9jb2xvciI6ICIjZjhmOWZhIiwgInRoZW1lX2NvbG9yIjogIiMxODgwMzgiLCAiaWNvbnMiOiBbeyJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxOTInIGhlaWdodD0nMTkyJyUzRSUzQ3JlY3Qgd2lkdGg9JzE5MicgaGVpZ2h0PScxOTInIGZpbGw9JyUyMzE4ODAzOCcgcng9JzI0Jy8lM0UlM0N0ZXh0IHg9Jzk2JyB5PScxMzAnIGZvbnQtc2l6ZT0nMTEwJyBmaWxsPSd3aGl0ZScgdGV4dC1hbmNob3I9J21pZGRsZScgZm9udC1mYW1pbHk9J0FyaWFsLHNhbnMtc2VyaWYnIGZvbnQtd2VpZ2h0PSdib2xkJyUzRVMlM0MvdGV4dCUzRSUzQy9zdmclM0UiLCAic2l6ZXMiOiAiMTkyeDE5MiIsICJ0eXBlIjogImltYWdlL3N2Zyt4bWwifV19">
     <title>Sheet Viewer</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Roboto, Arial, sans-serif; background: #f8f9fa; color: #202124; overflow-x: hidden; height: 100vh; display: flex; flex-direction: column; }
-        .banner { background: #188038; color: #fff; text-align: center; padding: 14px 16px; font-size: 18px; font-weight: 600; letter-spacing: 0.3px; flex-shrink: 0; }
-        .topbar { background: #fff; border-bottom: 1px solid #dadce0; padding: 10px 16px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; box-shadow: 0 1px 2px rgba(60,64,67,0.1); }
-        .topbar .logo { width: 34px; height: 34px; background: #188038; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 15px; flex-shrink: 0; }
+        body {
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #f8f9fa;
+            color: #202124;
+            overflow-x: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .banner {
+            background: #188038;
+            color: #fff;
+            text-align: center;
+            padding: 14px 16px;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            flex-shrink: 0;
+        }
+        .topbar {
+            background: #fff;
+            border-bottom: 1px solid #dadce0;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+            box-shadow: 0 1px 2px rgba(60,64,67,0.1);
+        }
+        .topbar .logo {
+            width: 34px; height: 34px;
+            background: #188038;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 700; font-size: 15px;
+            flex-shrink: 0;
+        }
         .topbar .title { font-size: 16px; font-weight: 500; }
-        .topbar .actions { margin-left: auto; display: flex; gap: 6px; align-items: center; }
-        .btn { padding: 6px 14px; border: 1px solid #dadce0; background: #fff; border-radius: 4px; font-size: 12px; cursor: pointer; color: #3c4043; display: inline-flex; align-items: center; gap: 5px; transition: all 0.15s; }
+        .topbar .actions {
+            margin-left: auto;
+            display: flex; gap: 6px; align-items: center;
+        }
+        .btn {
+            padding: 6px 14px;
+            border: 1px solid #dadce0;
+            background: #fff;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #3c4043;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.15s;
+        }
         .btn:hover { background: #f1f3f4; border-color: #bdc1c6; }
         .btn:active { background: #e8eaed; transform: scale(0.97); }
         .btn.primary { background: #188038; color: #fff; border-color: #137333; }
         .btn.primary:hover { background: #137333; }
-        .status { font-size: 12px; color: #5f6368; display: flex; align-items: center; gap: 6px; margin-left: 8px; }
-        .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #34a853; animation: pulse 2s infinite; }
+        .status {
+            font-size: 12px; color: #5f6368;
+            display: flex; align-items: center; gap: 6px;
+            margin-left: 8px;
+        }
+        .status-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: #34a853; animation: pulse 2s infinite;
+        }
         .status-dot.error { background: #ea4335; animation: none; }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-        .tabs { background: #fff; border-bottom: 1px solid #dadce0; display: flex; align-items: center; padding: 0 8px; flex-shrink: 0; overflow-x: auto; }
-        .tab { padding: 10px 20px; font-size: 13px; color: #5f6368; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.15s; }
+        .tabs {
+            background: #fff;
+            border-bottom: 1px solid #dadce0;
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            flex-shrink: 0;
+            overflow-x: auto;
+        }
+        .tab {
+            padding: 10px 20px;
+            font-size: 13px;
+            color: #5f6368;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            transition: all 0.15s;
+        }
         .tab:hover { background: #f1f3f4; color: #202124; }
         .tab.active { color: #188038; border-bottom-color: #188038; font-weight: 500; background: #e6f4ea; }
-        .toolbar { background: #fff; border-bottom: 1px solid #e8eaed; padding: 10px 16px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; flex-shrink: 0; }
+        .toolbar {
+            background: #fff;
+            border-bottom: 1px solid #e8eaed;
+            padding: 10px 16px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
         .search-wrap { position: relative; flex: 1; min-width: 180px; max-width: 320px; }
-        .search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; fill: #9aa0a6; }
-        .search { width: 100%; padding: 7px 10px 7px 32px; border: 1px solid #dadce0; border-radius: 4px; font-size: 13px; font-family: inherit; outline: none; }
+        .search-wrap svg {
+            position: absolute; left: 10px; top: 50%;
+            transform: translateY(-50%);
+            width: 14px; height: 14px; fill: #9aa0a6;
+        }
+        .search {
+            width: 100%;
+            padding: 7px 10px 7px 32px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+        }
         .search:focus { border-color: #188038; box-shadow: 0 0 0 2px rgba(24,128,56,0.15); }
+        .filter {
+            padding: 7px 12px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            background: #fff;
+            color: #3c4043;
+            cursor: pointer;
+            outline: none;
+            min-width: 140px;
+        }
+        .filter:focus { border-color: #188038; }
         .count { font-size: 12px; color: #5f6368; margin-left: auto; }
-        .subtotal-bar { background: #e8f0fe; border-bottom: 2px solid #188038; padding: 8px 16px; display: flex; gap: 24px; align-items: center; flex-wrap: wrap; flex-shrink: 0; font-size: 13px; position: sticky; top: 0; z-index: 50; }
+        .subtotal-bar {
+            background: #e8f0fe;
+            border-bottom: 2px solid #188038;
+            padding: 8px 16px;
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+            font-size: 13px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
         .subtotal-bar .st-label { font-weight: 600; color: #188038; }
         .subtotal-bar .st-item { display: flex; align-items: center; gap: 6px; }
         .subtotal-bar .st-key { color: #5f6368; font-size: 12px; }
         .subtotal-bar .st-val { font-weight: 600; color: #202124; font-variant-numeric: tabular-nums; }
-        .sheet-wrap { flex: 1; overflow: auto; padding: 0 16px 16px 16px; }
-        .sheet-table { border-collapse: collapse; table-layout: auto; background: #fff; box-shadow: 0 1px 3px rgba(60,64,67,0.15); width: 100%; min-width: 100%; }
-        .sheet-table td, .sheet-table th { padding: 5px 8px; font-size: 13px; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; border: 1px solid #e8eaed; }
-        .sheet-table th { background: #f8f9fa; font-weight: 600; color: #188038; cursor: pointer; user-select: none; position: sticky; top: 0; z-index: 5; }
-        .sheet-table th:hover { background: #e6f4ea; }
-        .sheet-table th .sort-icon { margin-left: 6px; color: #9aa0a6; font-size: 10px; }
-        .sheet-table th.sort-asc .sort-icon { color: #188038; }
-        .sheet-table th.sort-desc .sort-icon { color: #188038; }
-        .sheet-table td:first-child, .sheet-table th:first-child { background: #f8f9fa; font-weight: 600; color: #5f6368; width: 44px; min-width: 44px; max-width: 44px; text-align: center; position: sticky; left: 0; z-index: 10; border-right: 1px solid #dadce0; }
-        .sheet-table th:first-child { z-index: 15; cursor: default; }
-        .loading-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 50vh; gap: 16px; color: #5f6368; }
-        .spinner { width: 36px; height: 36px; border: 3px solid #e8eaed; border-top-color: #188038; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .sheet-wrap {
+            flex: 1;
+            overflow: auto;
+            padding: 0 16px 16px 16px;
+        }
+        .sheet-table {
+            border-collapse: collapse;
+            table-layout: fixed;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(60,64,67,0.15);
+            width: 100%;
+        }
+        .sheet-table td {
+            padding: 3px 6px;
+            font-size: 13px;
+            line-height: 1.4;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+        .loading-screen {
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            height: 50vh; gap: 16px; color: #5f6368;
+        }
+        .spinner {
+            width: 36px; height: 36px;
+            border: 3px solid #e8eaed;
+            border-top-color: #188038;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .error-box { margin: 40px auto; max-width: 480px; background: #fce8e8; border: 1px solid #f5c6cb; border-radius: 8px; padding: 20px; text-align: center; color: #721c24; }
-        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); background: #323232; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 13px; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 200; }
+        .error-box {
+            margin: 40px auto; max-width: 480px;
+            background: #fce8e8; border: 1px solid #f5c6cb;
+            border-radius: 8px; padding: 20px;
+            text-align: center; color: #721c24;
+        }
+        .toast {
+            position: fixed; bottom: 20px; left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #323232; color: #fff;
+            padding: 10px 20px; border-radius: 8px;
+            font-size: 13px; opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s;
+            z-index: 200;
+        }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
         .caption { margin-top: 12px; font-size: 12px; color: #5f6368; text-align: center; }
-        .pagination-bar { background: #fff; border-top: 1px solid #e8eaed; padding: 10px 16px; display: flex; align-items: center; justify-content: center; gap: 16px; flex-shrink: 0; font-size: 13px; }
-        .pagination-bar button { padding: 5px 14px; border: 1px solid #dadce0; background: #fff; border-radius: 4px; font-size: 12px; cursor: pointer; color: #3c4043; }
-        .pagination-bar button:hover:not(:disabled) { background: #f1f3f4; }
-        .pagination-bar button:disabled { opacity: 0.4; cursor: not-allowed; }
-        .page-info { color: #5f6368; font-size: 12px; }
-        .page-size { padding: 4px 8px; border: 1px solid #dadce0; border-radius: 4px; font-size: 12px; }
-        .install-bar { background: #e8f0fe; border: 1px solid #188038; border-radius: 8px; padding: 10px 16px; margin: 10px 16px 0 16px; display: none; align-items: center; gap: 12px; font-size: 13px; flex-shrink: 0; }
-        .install-bar.show { display: flex; }
-        .install-bar button { margin-left: auto; background: #188038; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; font-size: 12px; cursor: pointer; }
-        .install-bar button:hover { background: #137333; }
-        #loginOverlay { position: fixed; inset: 0; background: #f8f9fa; z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .login-card { background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 380px; text-align: center; }
-        .login-logo { width: 56px; height: 56px; background: #188038; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: white; font-weight: 700; font-size: 22px; }
-        .login-card h2 { margin-bottom: 6px; color: #202124; font-size: 22px; }
-        .login-card p { color: #5f6368; font-size: 14px; margin-bottom: 28px; }
-        .login-input { width: 100%; padding: 12px 14px; border: 1px solid #dadce0; border-radius: 6px; margin-bottom: 14px; font-size: 14px; font-family: inherit; outline: none; transition: border 0.15s; }
-        .login-input:focus { border-color: #188038; box-shadow: 0 0 0 3px rgba(24,128,56,0.12); }
-        .login-btn { width: 100%; padding: 12px; background: #188038; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
-        .login-btn:hover { background: #137333; }
-        .login-btn:active { transform: scale(0.98); }
-        .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        .login-error { color: #ea4335; font-size: 13px; margin-top: 12px; display: none; }
-        .login-hint { margin-top: 20px; padding-top: 16px; border-top: 1px solid #e8eaed; font-size: 12px; color: #9aa0a6; line-height: 1.5; }
-        .login-debug { margin-top: 10px; padding: 8px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; font-size: 11px; color: #856404; display: none; text-align: left; word-break: break-all; }
+        .dark body { background: #1a1a2e; color: #e0e0e0; }
+        .dark .topbar, .dark .toolbar, .dark .tabs { background: #16213e; border-color: #0f3460; }
+        .dark .search, .dark .filter { background: #1a1a2e; border-color: #0f3460; color: #e0e0e0; }
+        .dark .sheet-table { background: #16213e; }
+        .dark .sheet-table td { border-color: #0f3460; color: #e0e0e0; }
+        .dark .tab { color: #a0a0a0; }
+        .dark .tab:hover { background: #0f3460; color: #fff; }
+        .dark .tab.active { background: #188038; color: #fff; }
+        .dark .btn { background: #16213e; border-color: #0f3460; color: #e0e0e0; }
+        .dark .btn:hover { background: #0f3460; }
+        .dark .btn.primary { background: #188038; border-color: #137333; }
+        .dark .count { color: #a0a0a0; }
+        .dark .caption { color: #a0a0a0; }
+        .dark .subtotal-bar { background: #0f3460; border-bottom-color: #188038; }
+        .dark .subtotal-bar .st-key { color: #a0a0a0; }
+        .dark .subtotal-bar .st-val { color: #e0e0e0; }
         @media (max-width: 768px) {
             .banner { font-size: 15px; padding: 10px; }
             .topbar { padding: 8px 10px; flex-wrap: wrap; }
@@ -91,21 +232,84 @@
             .subtotal-bar { padding: 6px 10px; gap: 12px; font-size: 12px; }
             .search-wrap { max-width: 100%; min-width: 140px; }
             .sheet-wrap { padding: 0 8px 8px 8px; }
-            .sheet-table td, .sheet-table th { font-size: 12px; padding: 4px 6px; }
-            .sheet-table td:first-child, .sheet-table th:first-child { width: 36px; min-width: 36px; max-width: 36px; padding: 4px; }
+            .sheet-table td { font-size: 12px; padding: 2px 4px; }
             .tab { padding: 8px 14px; font-size: 12px; }
             .status { display: none; }
             .count { width: 100%; text-align: right; margin-top: 4px; }
-            .login-card { padding: 28px 20px; }
-            .pagination-bar { gap: 8px; padding: 8px 10px; }
-            .install-bar { margin: 8px 10px 0 10px; padding: 8px 10px; font-size: 12px; }
         }
-    </style>
-    <base target="_blank">
+    
+        /* Login overlay */
+        #loginOverlay {
+            position: fixed; inset: 0; background: #f8f9fa; z-index: 10000;
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .login-card {
+            background: #fff; padding: 40px; border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 380px;
+            text-align: center;
+        }
+        .login-logo {
+            width: 56px; height: 56px; background: #188038; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px; color: white; font-weight: 700; font-size: 22px;
+        }
+        .login-card h2 { margin-bottom: 6px; color: #202124; font-size: 22px; }
+        .login-card p { color: #5f6368; font-size: 14px; margin-bottom: 28px; }
+        .login-input {
+            width: 100%; padding: 12px 14px; border: 1px solid #dadce0;
+            border-radius: 6px; margin-bottom: 14px; font-size: 14px;
+            font-family: inherit; outline: none; transition: border 0.15s;
+        }
+        .login-input:focus { border-color: #188038; box-shadow: 0 0 0 3px rgba(24,128,56,0.12); }
+        .login-btn {
+            width: 100%; padding: 12px; background: #188038; color: #fff;
+            border: none; border-radius: 6px; font-size: 14px; font-weight: 600;
+            cursor: pointer; transition: background 0.15s;
+        }
+        .login-btn:hover { background: #137333; }
+        .login-btn:active { transform: scale(0.98); }
+        .login-error {
+            color: #ea4335; font-size: 13px; margin-top: 12px; display: none;
+        }
+        .login-hint {
+            margin-top: 20px; padding-top: 16px; border-top: 1px solid #e8eaed;
+            font-size: 12px; color: #9aa0a6; line-height: 1.5;
+        }
+        /* Install bar */
+        .install-bar {
+            background: #e8f0fe;
+            border: 1px solid #188038;
+            border-radius: 8px;
+            padding: 10px 16px;
+            margin: 10px 16px 0 16px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+        .install-bar.show { display: flex; }
+        .install-bar button {
+            margin-left: auto;
+            background: #188038;
+            color: #fff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+</style>
 <base target="_blank">
+
+    <meta name="theme-color" content="#188038">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#188038">
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjogIlNoZWV0IFZpZXdlciIsICJzaG9ydF9uYW1lIjogIlNoZWV0cyIsICJzdGFydF91cmwiOiAiLiIsICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLCAiYmFja2dyb3VuZF9jb2xvciI6ICIjZjhmOWZhIiwgInRoZW1lX2NvbG9yIjogIiMxODgwMzgiLCAiaWNvbnMiOiBbeyJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxOTInIGhlaWdodD0nMTkyJyUzRSUzQ3JlY3Qgd2lkdGg9JzE5MicgaGVpZ2h0PScxOTInIGZpbGw9JyUyMzE4ODAzOCcgcng9JzI0Jy8lM0UlM0N0ZXh0IHg9Jzk2JyB5PScxMzAnIGZvbnQtc2l6ZT0nMTEwJyBmaWxsPSd3aGl0ZScgdGV4dC1hbmNob3I9J21pZGRsZScgZm9udC1mYW1pbHk9J0FyaWFsLHNhbnMtc2VyaWYnIGZvbnQtd2VpZ2h0PSdib2xkJyUzRVMlM0MvdGV4dCUzRSUzQy9zdmclM0UiLCAic2l6ZXMiOiAiMTkyeDE5MiIsICJ0eXBlIjogImltYWdlL3N2Zyt4bWwifV19">
 </head>
 <body>
-    <div id="loginOverlay">
+        <div id="loginOverlay">
         <div class="login-card">
             <div class="login-logo">S</div>
             <h2>Sheet Viewer</h2>
@@ -114,7 +318,6 @@
             <input type="password" class="login-input" id="loginPassword" placeholder="Password" autocomplete="current-password">
             <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
             <div class="login-error" id="loginError">Invalid ID or password</div>
-            <div class="login-debug" id="loginDebug"></div>
             <div class="login-hint">
                 <strong>Demo:</strong> ID = <code>demo</code> , Password = <code>demo123</code><br>
                 Add your own users in the CONFIG section of the code.
@@ -122,173 +325,76 @@
         </div>
     </div>
 
-    <div class="banner" id="banner">Sheet Viewer</div>
-    <div class="topbar">
-        <div class="logo">S</div>
-        <div class="title" id="pageTitle">Sheet Viewer</div>
-        <div class="actions">
-            <button class="btn" onclick="loadSheet()">&#x21bb; Refresh</button>
-            <button class="btn primary" onclick="toggleFullscreen()">&#x26F6; Full</button>
-            <button class="btn" onclick="doLogout()" style="border-color:#ea4335;color:#ea4335;">Logout</button>
-        </div>
-        <div class="status">
-            <span class="status-dot" id="statusDot"></span>
-            <span id="statusText">Loading...</span>
-        </div>
-    </div>
-    <div class="tabs" id="tabBar"></div>
+
     <div class="install-bar" id="installBar">
         <span>&#128242; Add Sheet Viewer to your home screen</span>
         <button onclick="promptInstall()">Install App</button>
-    </div>
-    <div class="toolbar">
-        <div class="search-wrap">
-            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-            <input type="text" class="search" id="searchBox" placeholder="Search all columns..." oninput="doSearch()">
-        </div>
-        <div class="count" id="rowCount">0 rows</div>
-    </div>
-    <div class="subtotal-bar" id="subtotalBar"></div>
-    <div class="sheet-wrap" id="sheetArea">
-        <div class="loading-screen">
-            <div class="spinner"></div>
-            <div>Please sign in to load data.</div>
-        </div>
-    </div>
-    <div class="pagination-bar" id="paginationBar" style="display:none;">
-        <button onclick="changePage(-1)" id="btnPrev">&#x25C0; Prev</button>
-        <span class="page-info" id="pageInfo">Page 1 of 1</span>
-        <button onclick="changePage(1)" id="btnNext">Next &#x25B6;</button>
-        <select class="page-size" id="pageSize" onchange="changePageSize()">
-            <option value="100">100 / page</option>
-            <option value="250">250 / page</option>
-            <option value="500" selected>500 / page</option>
-            <option value="1000">1000 / page</option>
-        </select>
-    </div>
-    <div class="toast" id="toast"></div>
-
-    <script>
-        function setDebug(msg) {
-            var el = document.getElementById('loginDebug');
-            if (el) { el.textContent = msg; el.style.display = 'block'; }
-            console.log('[SheetViewer]', msg);
-        }
-
+    </div><script>
+                // ============================================================
+        // USER DATABASE
+        // ============================================================
         const USERS = {
             'demo': {
                 password: 'demo123',
-                companyName: 'Happy Miles Incorporated',
-                spreadsheetId: '1x0BnUziYQemws3Wd0vzsjGxLBoVeLX02fQzdJ6CEuLg',
-                sheetName: '',
-                dataRange: ''
-            },
-            'abhi': {
-                password: 'admin',
-                companyName: 'Happy Miles Admin',
+                companyName: 'Demo Company',
                 spreadsheetId: '1x0BnUziYQemws3Wd0vzsjGxLBoVeLX02fQzdJ6CEuLg',
                 sheetName: '',
                 dataRange: ''
             },
         };
 
-        const AUTO_REFRESH_MS = 10800000;
-        const API_KEY = 'AIzaSyBDLyEYzxIbwIfpiZj9745vBhbE0_lRYEk';
-
-        var COMPANY_NAME = 'Sheet Viewer';
-        var SPREADSHEET_ID = '';
-        var SHEET_NAME = '';
-        var DATA_RANGE = '';
-
-        var sheetArea = document.getElementById('sheetArea');
-        var statusText = document.getElementById('statusText');
-        var statusDot = document.getElementById('statusDot');
-        var pageTitle = document.getElementById('pageTitle');
-        var tabBar = document.getElementById('tabBar');
-        var searchBox = document.getElementById('searchBox');
-        var rowCount = document.getElementById('rowCount');
-        var subtotalBar = document.getElementById('subtotalBar');
-        var paginationBar = document.getElementById('paginationBar');
-        var pageInfo = document.getElementById('pageInfo');
-        var btnPrev = document.getElementById('btnPrev');
-        var btnNext = document.getElementById('btnNext');
-
-        var allSheets = [];
-        var spreadsheetName = 'Sheet Viewer';
-        var currentIdx = 0;
-        var searchTerm = '';
-        var autoTimer = null;
-        var sortState = { col: null, dir: null };
-        var currentPage = 1;
-        var rowsPerPage = 500;
-        var totalVisibleRows = [];
-        var allRowData = [];
-        var allHeader = [];
-        var deferredPrompt = null;
-
-        // PWA
+        let deferredPrompt = null;
         if ('serviceWorker' in navigator) {
             try {
-                var swCode = "self.addEventListener('install',function(e){e.waitUntil(caches.open('sv1').then(function(c){return c.addAll(['./']);}));self.skipWaiting();});self.addEventListener('activate',function(e){self.clients.claim();});self.addEventListener('fetch',function(e){e.respondWith(caches.match(e.request).then(function(r){return r||fetch(e.request);}));});";
+                const swCode = "self.addEventListener('install',function(e){e.waitUntil(caches.open('sv1').then(function(c){return c.addAll(['./']);}));self.skipWaiting();});self.addEventListener('activate',function(e){self.clients.claim();});self.addEventListener('fetch',function(e){e.respondWith(caches.match(e.request).then(function(r){return r||fetch(e.request);}));});";
                 navigator.serviceWorker.register(URL.createObjectURL(new Blob([swCode],{type:'application/javascript'})));
             } catch(e) { console.log('SW skip', e); }
         }
-        window.addEventListener('beforeinstallprompt', function(e) {
+        window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            var bar = document.getElementById('installBar');
-            if (bar) bar.classList.add('show');
+            document.getElementById('installBar').classList.add('show');
         });
         function promptInstall() {
-            if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then(function(){deferredPrompt=null;}); }
+            if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then(() => { deferredPrompt = null; }); }
         }
 
         function doLogin() {
-            setDebug('Login clicked');
-            var id = document.getElementById('loginId').value.trim().toLowerCase();
-            var pass = document.getElementById('loginPassword').value;
-            var btn = document.getElementById('loginBtn');
-            var err = document.getElementById('loginError');
+            const id = document.getElementById('loginId').value.trim().toLowerCase();
+            const pass = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('loginBtn');
+            const err = document.getElementById('loginError');
 
-            setDebug('ID: ' + id + ' | Pass len: ' + pass.length);
-
-            var user = USERS[id];
+            const user = USERS[id];
             if (!user) {
-                setDebug('User not found: ' + id);
                 err.textContent = 'User ID not found';
                 err.style.display = 'block';
                 return;
             }
             if (user.password !== pass) {
-                setDebug('Wrong password for: ' + id);
                 err.textContent = 'Wrong password';
                 err.style.display = 'block';
                 return;
             }
 
-            setDebug('Login OK, loading sheet...');
             btn.disabled = true;
             btn.textContent = 'Loading...';
             err.style.display = 'none';
 
-            COMPANY_NAME = user.companyName;
+            document.getElementById('banner').textContent = user.companyName;
+            document.getElementById('loginOverlay').style.display = 'none';
+
+            // Set config and load
             SPREADSHEET_ID = user.spreadsheetId;
             SHEET_NAME = user.sheetName || '';
             DATA_RANGE = user.dataRange || '';
 
-            document.getElementById('banner').textContent = COMPANY_NAME;
-            document.getElementById('loginOverlay').style.display = 'none';
-
-            loadSheet().then(function() {
-                setDebug('Sheet loaded successfully');
-            }).catch(function(e) {
-                setDebug('Sheet load error: ' + e.message);
-                btn.disabled = false;
-                btn.textContent = 'Sign In';
-            });
+            loadSheet();
         }
 
-        function doLogout() { location.reload(); }
+        function doLogout() {
+            location.reload();
+        }
 
         document.getElementById('loginPassword').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') doLogin();
@@ -297,84 +403,101 @@
             if (e.key === 'Enter') document.getElementById('loginPassword').focus();
         });
 
-        function escapeHtml(text) {
-            if (text == null) return '';
-            var str = String(text);
-            var out = '', i = 0, ch;
-            for (; i < str.length; i++) {
-                ch = str.charCodeAt(i);
-                if (ch === 38) out += '&amp;';
-                else if (ch === 60) out += '&lt;';
-                else if (ch === 62) out += '&gt;';
-                else if (ch === 34) out += '&quot;';
-                else if (ch === 39) out += '&#039;';
-                else out += str.charAt(i);
-            }
-            return out;
-        }
+// ============================================================
+        // CONFIG: EDIT THESE LINES ONLY
+        // ============================================================
+        const COMPANY_NAME    = 'Happy Miles';
+        const AUTO_REFRESH_MS = 10800000;
+        const SPREADSHEET_ID  = '1x0BnUziYQemws3Wd0vzsjGxLBoVeLX02fQzdJ6CEuLg';
+        const API_KEY         = 'AIzaSyBDLyEYzxIbwIfpiZj9745vBhbE0_lRYEk';
+        const SHEET_NAME      = '';
+        const DATA_RANGE      = '';
+        // ============================================================
 
+        document.getElementById('banner').textContent = COMPANY_NAME;
+
+        const sheetArea    = document.getElementById('sheetArea');
+        const statusText   = document.getElementById('statusText');
+        const statusDot    = document.getElementById('statusDot');
+        const pageTitle    = document.getElementById('pageTitle');
+        const tabBar       = document.getElementById('tabBar');
+        const filterBox    = document.getElementById('filterBox');
+        const searchBox    = document.getElementById('searchBox');
+        const rowCount     = document.getElementById('rowCount');
+        const subtotalBar  = document.getElementById('subtotalBar');
+
+        let allSheets = [];
+        let spreadsheetName = 'Sheet Viewer';
+        let currentIdx = 0;
+        let searchTerm = '';
+        let filterVal  = 'all';
+        let isDark     = false;
+        let autoTimer  = null;
+
+        // ---------- Color & Style Helpers ----------
         function colorToCss(c) {
             if (!c) return null;
-            var r = Math.round((c.red || 0) * 255);
-            var g = Math.round((c.green || 0) * 255);
-            var b = Math.round((c.blue || 0) * 255);
-            var a = c.alpha !== undefined ? c.alpha : 1;
-            return a === 1 ? 'rgb(' + r + ',' + g + ',' + b + ')' : 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+            const r = Math.round((c.red   || 0) * 255);
+            const g = Math.round((c.green || 0) * 255);
+            const b = Math.round((c.blue  || 0) * 255);
+            const a = c.alpha !== undefined ? c.alpha : 1;
+            return a === 1 ? `rgb(${r},${g},${b})` : `rgba(${r},${g},${b},${a})`;
         }
 
         function buildCellStyle(fmt) {
             if (!fmt) return '';
-            var s = [];
-            var bg = colorToCss(fmt.backgroundColor);
-            if (bg) s.push('background-color:' + bg);
-            var tf = fmt.textFormat;
+            const s = [];
+            const bg = colorToCss(fmt.backgroundColor);
+            if (bg) s.push(`background-color:${bg}`);
+            const tf = fmt.textFormat;
             if (tf) {
                 if (tf.bold) s.push('font-weight:bold');
                 if (tf.italic) s.push('font-style:italic');
-                if (tf.fontSize) s.push('font-size:' + tf.fontSize + 'pt');
-                if (tf.fontFamily) s.push('font-family:"' + tf.fontFamily + '",sans-serif');
-                var fg = colorToCss(tf.foregroundColor);
-                if (fg) s.push('color:' + fg);
-                var deco = [];
+                if (tf.fontSize) s.push(`font-size:${tf.fontSize}pt`);
+                if (tf.fontFamily) s.push(`font-family:"${tf.fontFamily}",sans-serif`);
+                const fg = colorToCss(tf.foregroundColor);
+                if (fg) s.push(`color:${fg}`);
+                const deco = [];
                 if (tf.underline) deco.push('underline');
                 if (tf.strikethrough) deco.push('line-through');
-                if (deco.length) s.push('text-decoration:' + deco.join(' '));
+                if (deco.length) s.push(`text-decoration:${deco.join(' ')}`);
             }
-            if (fmt.horizontalAlignment) s.push('text-align:' + fmt.horizontalAlignment.toLowerCase());
+            if (fmt.horizontalAlignment) s.push(`text-align:${fmt.horizontalAlignment.toLowerCase()}`);
             if (fmt.verticalAlignment) {
-                var vm = {TOP:'top', MIDDLE:'middle', BOTTOM:'bottom'};
-                s.push('vertical-align:' + (vm[fmt.verticalAlignment] || 'middle'));
+                const vm = {TOP:'top', MIDDLE:'middle', BOTTOM:'bottom'};
+                s.push(`vertical-align:${vm[fmt.verticalAlignment]||'middle'}`);
             }
             if (fmt.wrapStrategy === 'WRAP') { s.push('white-space:normal'); s.push('word-wrap:break-word'); }
-            var sides = ['top','bottom','left','right'];
-            var sm = {SOLID:'solid', DOTTED:'dotted', DASHED:'dashed', DOUBLE:'double', SOLID_MEDIUM:'solid', SOLID_THICK:'solid'};
-            sides.forEach(function(side) {
-                var b = fmt.borders && fmt.borders[side];
+            const sides = ['top','bottom','left','right'];
+            const sm = {SOLID:'solid', DOTTED:'dotted', DASHED:'dashed', DOUBLE:'double', SOLID_MEDIUM:'solid', SOLID_THICK:'solid'};
+            sides.forEach(side => {
+                const b = fmt.borders && fmt.borders[side];
                 if (b && b.style && b.style !== 'NONE') {
-                    var w = b.width || (b.style === 'SOLID_THICK' ? 2 : b.style === 'SOLID_MEDIUM' ? 1.5 : 1);
-                    var st = sm[b.style] || 'solid';
-                    var col = colorToCss(b.color) || '#999';
-                    s.push('border-' + side + ':' + w + 'px ' + st + ' ' + col);
+                    const w = b.width || (b.style==='SOLID_THICK'?2:b.style==='SOLID_MEDIUM'?1.5:1);
+                    const st = sm[b.style] || 'solid';
+                    const col = colorToCss(b.color) || '#999';
+                    s.push(`border-${side}:${w}px ${st} ${col}`);
                 }
             });
             if (fmt.padding) {
-                var p = fmt.padding;
-                s.push('padding:' + (p.top || 2) + 'px ' + (p.right || 6) + 'px ' + (p.bottom || 2) + 'px ' + (p.left || 6) + 'px');
+                const p = fmt.padding;
+                s.push(`padding:${p.top||2}px ${p.right||6}px ${p.bottom||2}px ${p.left||6}px`);
             }
             return s.join(';');
         }
 
+        // ---------- Merge Processing ----------
         function processMerges(mergeCells, maxRows, maxCols) {
-            var covered = Array.from({length: maxRows}, function() { return Array(maxCols).fill(false); });
-            var mergeInfo = Array.from({length: maxRows}, function() { return Array(maxCols).fill(null); });
-            (mergeCells || []).forEach(function(m) {
-                var r = m.range || {};
-                var sr = r.startRowIndex || 0;
-                var er = r.endRowIndex || maxRows;
-                var sc = r.startColumnIndex || 0;
-                var ec = r.endColumnIndex || maxCols;
-                for (var row = sr; row < er; row++) {
-                    for (var col = sc; col < ec; col++) {
+            const covered = Array.from({length:maxRows},()=>Array(maxCols).fill(false));
+            const mergeInfo = Array.from({length:maxRows},()=>Array(maxCols).fill(null));
+            (mergeCells||[]).forEach(m => {
+                const r = m.range || {};
+                const sr = r.startRowIndex || 0;
+                const er = r.endRowIndex   || maxRows;
+                const sc = r.startColumnIndex || 0;
+                const ec = r.endColumnIndex   || maxCols;
+                for (let row = sr; row < er; row++) {
+                    for (let col = sc; col < ec; col++) {
                         if (row < maxRows && col < maxCols) covered[row][col] = true;
                     }
                 }
@@ -386,49 +509,59 @@
                     };
                 }
             });
-            return { covered: covered, mergeInfo: mergeInfo };
+            return { covered, mergeInfo };
         }
 
+        function escapeHtml(text) {
+            const d = document.createElement('div');
+            d.textContent = text;
+            return d.innerHTML;
+        }
+
+        // ---------- Number Parsing ----------
         function parseNumber(str) {
             if (!str) return 0;
-            var cleaned = String(str).replace(/[\s$,%]/g, '').replace(/[€£¥]/g, '');
-            var num = parseFloat(cleaned);
+            const cleaned = str.replace(/[$,€£¥%\s]/g, '');
+            const num = parseFloat(cleaned);
             return isNaN(num) ? 0 : num;
         }
 
         function formatNumber(num) {
             if (num === 0) return '0';
-            var isInt = Number.isInteger(num);
-            return num.toLocaleString('en-US', {minimumFractionDigits: isInt ? 0 : 2, maximumFractionDigits: 2});
+            const isInt = Number.isInteger(num);
+            return num.toLocaleString('en-US', {minimumFractionDigits: isInt?0:2, maximumFractionDigits: 2});
         }
 
+        // ---------- Hidden Rows/Cols from API ----------
         function getHiddenCols(columnMetadata) {
-            var hidden = [];
-            (columnMetadata || []).forEach(function(meta, idx) {
+            const hidden = [];
+            (columnMetadata||[]).forEach((meta, idx) => {
                 if (meta.hiddenByUser) hidden.push(idx);
             });
             return hidden;
         }
 
         function getHiddenRows(rowMetadata) {
-            var hidden = [];
-            (rowMetadata || []).forEach(function(meta, idx) {
+            const hidden = [];
+            (rowMetadata||[]).forEach((meta, idx) => {
                 if (meta.hiddenByUser) hidden.push(idx);
             });
             return hidden;
         }
 
+        // ---------- Get Frozen Row Count from API ----------
         function getFrozenRowCount(sheetData) {
-            var grid = sheetData.properties && sheetData.properties.gridProperties;
+            const grid = sheetData.properties && sheetData.properties.gridProperties;
             if (grid && grid.frozenRowCount) return grid.frozenRowCount;
-            var data = sheetData.data && sheetData.data[0];
+            const data = sheetData.data && sheetData.data[0];
             if (data && data.rowData) {
-                for (var r = Math.min(3, data.rowData.length - 1); r >= 0; r--) {
-                    var cells = data.rowData[r].values || [];
+                // Fallback: find header row
+                for (let r = Math.min(3, data.rowData.length - 1); r >= 0; r--) {
+                    const cells = data.rowData[r].values || [];
                     if (cells.length === 0) continue;
-                    var textCount = cells.filter(function(c) {
-                        var v = (c.formattedValue || '').trim();
-                        return v.length > 0 && v.length < 30 && isNaN(parseFloat(v.replace(/[\s$,]/g, ''))) && !v.match(/^\d{1,2}[-/]/);
+                    const textCount = cells.filter(c => {
+                        const v = (c.formattedValue || '').trim();
+                        return v.length > 0 && v.length < 30 && isNaN(parseFloat(v.replace(/[$,\s]/g,''))) && !v.match(/^\d{1,2}[-/]/);
                     }).length;
                     if (textCount >= Math.max(2, cells.length * 0.5)) return r + 1;
                 }
@@ -436,18 +569,62 @@
             return 1;
         }
 
+        // ---------- Filter Logic ----------
+        function getFilterColumnIndex(header) {
+            const h = header.map(x => (x||'').toLowerCase());
+            const idx = h.findIndex(x => x.includes('status'));
+            if (idx >= 0) return idx;
+            return h.length - 1;
+        }
+
+        function getUniqueFilterValues(sheetData, headerRowIdx, hiddenRows) {
+            const data = sheetData.data && sheetData.data[0];
+            if (!data || !data.rowData) return [];
+            const rows = data.rowData;
+            const dataStart = headerRowIdx + 1;
+            if (dataStart >= rows.length) return [];
+            let colIdx = rows[headerRowIdx].values ? rows[headerRowIdx].values.length - 1 : 0;
+            const headerCells = rows[headerRowIdx].values || [];
+            const header = headerCells.map(c => (c.formattedValue || '').toLowerCase());
+            const statusIdx = header.findIndex(h => h.includes('status'));
+            if (statusIdx >= 0) colIdx = statusIdx;
+            const vals = new Set();
+            for (let i = dataStart; i < rows.length; i++) {
+                if (hiddenRows.includes(i)) continue;
+                const cell = rows[i].values && rows[i].values[colIdx];
+                const v = cell ? (cell.formattedValue || '').trim() : '';
+                if (v) vals.add(v);
+            }
+            return Array.from(vals).sort();
+        }
+
+        function populateFilter(sheetData, headerRowIdx, hiddenRows) {
+            const options = getUniqueFilterValues(sheetData, headerRowIdx, hiddenRows);
+            let html = '<option value="all">All Rows</option>';
+            options.forEach(opt => {
+                html += `<option value="${escapeHtml(opt)}">${escapeHtml(opt)}</option>`;
+            });
+            filterBox.innerHTML = html;
+            if (filterVal !== 'all' && options.includes(filterVal)) {
+                filterBox.value = filterVal;
+            } else {
+                filterVal = 'all';
+                filterBox.value = 'all';
+            }
+        }
+
+        // ---------- Detect Numeric Columns ----------
         function detectNumericColumns(rows, dataStart, maxCols, hiddenRows) {
-            var numericCols = [];
-            var sampleLimit = Math.min(rows.length, dataStart + 1000);
-            for (var c = 0; c < maxCols; c++) {
-                var numCount = 0, totalCount = 0;
-                for (var r = dataStart; r < sampleLimit; r++) {
+            const numericCols = [];
+            for (let c = 0; c < maxCols; c++) {
+                let numCount = 0, totalCount = 0;
+                for (let r = dataStart; r < rows.length; r++) {
                     if (hiddenRows.includes(r)) continue;
-                    var cell = rows[r].values && rows[r].values[c];
-                    var v = cell ? (cell.formattedValue || '').trim() : '';
+                    const cell = rows[r].values && rows[r].values[c];
+                    const v = cell ? (cell.formattedValue || '').trim() : '';
                     if (!v) continue;
                     totalCount++;
-                    var cleaned = v.replace(/[\s$,%]/g, '').replace(/[€£¥]/g, '');
+                    const cleaned = v.replace(/[$,€£¥%\s]/g, '');
                     if (!isNaN(parseFloat(cleaned)) && isFinite(cleaned)) numCount++;
                 }
                 if (totalCount > 0 && numCount / totalCount >= 0.7) numericCols.push(c);
@@ -455,294 +632,207 @@
             return numericCols;
         }
 
-        function sortByColumn(colIdx) {
-            if (sortState.col === colIdx) {
-                if (sortState.dir === 'asc') sortState.dir = 'desc';
-                else if (sortState.dir === 'desc') { sortState.col = null; sortState.dir = null; }
-            } else {
-                sortState.col = colIdx;
-                sortState.dir = 'asc';
-            }
-            currentPage = 1;
-            renderSheet(currentIdx);
-        }
-
-        function getSortIcon(colIdx) {
-            if (sortState.col !== colIdx) return '<span class="sort-icon">&#x21C5;</span>';
-            return sortState.dir === 'asc' ? '<span class="sort-icon">&#x25B2;</span>' : '<span class="sort-icon">&#x25BC;</span>';
-        }
-
-        function changePage(delta) {
-            var maxPage = Math.max(1, Math.ceil(totalVisibleRows.length / rowsPerPage));
-            var newPage = currentPage + delta;
-            if (newPage >= 1 && newPage <= maxPage) {
-                currentPage = newPage;
-                renderSheet(currentIdx);
-                document.getElementById('sheetArea').scrollTop = 0;
-            }
-        }
-
-        function changePageSize() {
-            rowsPerPage = parseInt(document.getElementById('pageSize').value, 10);
-            currentPage = 1;
-            renderSheet(currentIdx);
-        }
-
-        function updatePagination() {
-            var total = totalVisibleRows.length;
-            if (total <= 100) {
-                paginationBar.style.display = 'none';
-                return;
-            }
-            paginationBar.style.display = 'flex';
-            var maxPage = Math.max(1, Math.ceil(total / rowsPerPage));
-            if (currentPage > maxPage) currentPage = maxPage;
-            pageInfo.textContent = 'Page ' + currentPage + ' of ' + maxPage + ' (' + total + ' rows)';
-            btnPrev.disabled = currentPage <= 1;
-            btnNext.disabled = currentPage >= maxPage;
-        }
-
-        function exportCSV() {
-            if (!allRowData.length) { showToast('No data to export'); return; }
-            var csv = '';
-            csv += allHeader.map(function(h) { return '"' + String(h).replace(/"/g, '""') + '"'; }).join(',') + '
-';
-            totalVisibleRows.forEach(function(rIdx) {
-                var row = allRowData[rIdx];
-                if (!row) return;
-                csv += row.map(function(cell) { return '"' + String(cell).replace(/"/g, '""') + '"'; }).join(',') + '
-';
-            });
-            var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            var link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = (COMPANY_NAME.replace(/\s+/g, '_') || 'data') + '_export.csv';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            showToast('CSV downloaded');
-        }
-
+        // ---------- Rendering ----------
         function renderSheet(idx) {
-            var sheet = allSheets[idx];
+            const sheet = allSheets[idx];
             if (!sheet) return;
 
-            var data = sheet.data && sheet.data[0];
+            const data = sheet.data && sheet.data[0];
             if (!data || !data.rowData) {
                 sheetArea.innerHTML = '<div class="error-box">No data found in this sheet.</div>';
                 subtotalBar.innerHTML = '';
-                paginationBar.style.display = 'none';
                 return;
             }
 
-            var rows = data.rowData;
-            var colMeta = data.columnMetadata || [];
-            var rowMeta = data.rowMetadata || [];
-            var maxCols = Math.max.apply(null, rows.map(function(r) { return (r.values || []).length; }).concat([colMeta.length]));
-            var maxRows = rows.length;
-            var rowHeights = rowMeta.map(function(m) { return m.pixelSize || 21; });
-            var mergeCells = sheet.mergeCells || [];
-            var pm = processMerges(mergeCells, maxRows, maxCols);
-            var covered = pm.covered;
-            var mergeInfo = pm.mergeInfo;
+            const rows = data.rowData;
+            const colMeta = data.columnMetadata || [];
+            const rowMeta = data.rowMetadata || [];
+            const maxCols = Math.max(...rows.map(r => (r.values||[]).length), colMeta.length);
+            const maxRows = rows.length;
+            const colWidths = colMeta.map(m => m.pixelSize || 100);
+            const rowHeights = rowMeta.map(m => m.pixelSize || 21);
+            const mergeCells = sheet.mergeCells || [];
+            const { covered, mergeInfo } = processMerges(mergeCells, maxRows, maxCols);
 
-            var hiddenCols = getHiddenCols(colMeta);
-            var hiddenRows = getHiddenRows(rowMeta);
-            var frozenRows = getFrozenRowCount(sheet);
-            var headerRowIdx = Math.min(frozenRows - 1, maxRows - 1);
-            var headerCells = rows[headerRowIdx].values || [];
-            var header = headerCells.map(function(c) { return (c.formattedValue || '').trim(); });
+            // Hidden rows/cols from API
+            const hiddenCols = getHiddenCols(colMeta);
+            const hiddenRows = getHiddenRows(rowMeta);
 
-            var dataStart = headerRowIdx + 1;
-            var numericCols = detectNumericColumns(rows, dataStart, maxCols, hiddenRows);
+            // Frozen rows
+            const frozenRows = getFrozenRowCount(sheet);
 
-            totalVisibleRows = [];
-            allRowData = [];
-            allHeader = header;
+            // Header row
+            const headerRowIdx = Math.min(frozenRows - 1, maxRows - 1);
+            const headerCells = rows[headerRowIdx].values || [];
+            const header = headerCells.map(c => (c.formattedValue || '').trim());
 
-            for (var r = dataStart; r < maxRows; r++) {
+            // Populate filter
+            populateFilter(sheet, headerRowIdx, hiddenRows);
+            const filterCol = getFilterColumnIndex(header);
+
+            // Detect numeric columns
+            const dataStart = headerRowIdx + 1;
+            const numericCols = detectNumericColumns(rows, dataStart, maxCols, hiddenRows);
+
+            // Determine visible data rows
+            let visibleRows = [];
+            for (let r = dataStart; r < maxRows; r++) {
                 if (hiddenRows.includes(r)) continue;
-                var row = rows[r] || {};
-                var cells = row.values || [];
-                var vals = cells.map(function(c) { return (c.formattedValue || '').trim(); });
-                allRowData[r] = cells.map(function(c) { return c.formattedValue || ''; });
+                const row = rows[r] || {};
+                const cells = row.values || [];
+                const vals = cells.map(c => (c.formattedValue || '').trim());
+
+                if (filterVal !== 'all') {
+                    const fv = (cells[filterCol] ? (cells[filterCol].formattedValue || '') : '').trim();
+                    if (fv !== filterVal) continue;
+                }
 
                 if (searchTerm) {
-                    var term = searchTerm.toLowerCase();
-                    var found = vals.some(function(v) { return v.toLowerCase().indexOf(term) !== -1; });
+                    const term = searchTerm.toLowerCase();
+                    const found = vals.some(v => v.toLowerCase().includes(term));
                     if (!found) continue;
                 }
-                totalVisibleRows.push(r);
+
+                visibleRows.push(r);
             }
 
-            if (sortState.col !== null && sortState.dir) {
-                var sortCol = sortState.col;
-                totalVisibleRows.sort(function(a, b) {
-                    var valA = (rows[a].values && rows[a].values[sortCol] ? rows[a].values[sortCol].formattedValue : '').trim();
-                    var valB = (rows[b].values && rows[b].values[sortCol] ? rows[b].values[sortCol].formattedValue : '').trim();
-                    var numA = parseNumber(valA);
-                    var numB = parseNumber(valB);
-                    var cmp;
-                    if (numA !== 0 && numB !== 0) {
-                        cmp = numA - numB;
-                    } else if (numA !== 0) {
-                        cmp = -1;
-                    } else if (numB !== 0) {
-                        cmp = 1;
-                    } else {
-                        cmp = valA.localeCompare(valB);
-                    }
-                    return sortState.dir === 'asc' ? cmp : -cmp;
-                });
-            }
-
-            var subtotals = new Array(maxCols).fill(null);
-            if (numericCols.length > 0 && totalVisibleRows.length > 0) {
-                numericCols.forEach(function(colIdx) {
+            // Calculate subtotals for sticky bar
+            const subtotals = new Array(maxCols).fill(null);
+            if (numericCols.length > 0 && visibleRows.length > 0) {
+                numericCols.forEach(colIdx => {
                     if (hiddenCols.includes(colIdx)) return;
-                    var sum = 0;
-                    totalVisibleRows.forEach(function(r) {
-                        var cell = rows[r].values && rows[r].values[colIdx];
+                    let sum = 0;
+                    visibleRows.forEach(r => {
+                        const cell = rows[r].values && rows[r].values[colIdx];
                         sum += parseNumber(cell ? cell.formattedValue : '');
                     });
                     subtotals[colIdx] = formatNumber(sum);
                 });
             }
 
-            var barHtml = '';
-            if (numericCols.length > 0 && totalVisibleRows.length > 0) {
-                barHtml = '<span class="st-label">Subtotal (' + totalVisibleRows.length + ' rows):</span>';
-                numericCols.forEach(function(colIdx) {
+            // Build subtotal bar
+            let barHtml = '';
+            if (numericCols.length > 0 && visibleRows.length > 0) {
+                barHtml = `<span class="st-label">Subtotal (${visibleRows.length} rows):</span>`;
+                numericCols.forEach(colIdx => {
                     if (hiddenCols.includes(colIdx)) return;
                     if (subtotals[colIdx] !== null) {
-                        var label = header[colIdx] || 'Col ' + (colIdx + 1);
-                        barHtml += '<span class="st-item"><span class="st-key">' + escapeHtml(label) + ':</span><span class="st-val">' + subtotals[colIdx] + '</span></span>';
+                        const label = header[colIdx] || `Col ${colIdx+1}`;
+                        barHtml += `<span class="st-item"><span class="st-key">${escapeHtml(label)}:</span><span class="st-val">${subtotals[colIdx]}</span></span>`;
                     }
                 });
             } else {
-                barHtml = '<span class="st-label">' + totalVisibleRows.length + ' rows shown</span>';
+                barHtml = `<span class="st-label">${visibleRows.length} rows shown</span>`;
             }
             subtotalBar.innerHTML = barHtml;
 
-            var startIdx = (currentPage - 1) * rowsPerPage;
-            var pageRows = totalVisibleRows.slice(startIdx, startIdx + rowsPerPage);
+            // Build table — skip hidden columns and rows
+            let html = '<table class="sheet-table">';
 
-            var html = '<table class="sheet-table">';
-            var stickyOffsets = [0];
-            for (var r = 1; r < frozenRows && r < maxRows; r++) {
-                stickyOffsets.push(stickyOffsets[r - 1] + (rowHeights[r - 1] || 21));
+            // Calculate cumulative sticky offsets for frozen rows
+            let stickyOffsets = [0];
+            for (let r = 1; r < frozenRows && r < maxRows; r++) {
+                stickyOffsets.push(stickyOffsets[r-1] + (rowHeights[r-1] || 21));
             }
 
-            for (var r = 0; r < maxRows; r++) {
+            for (let r = 0; r < maxRows; r++) {
+                // Skip hidden rows (except frozen rows which are always shown)
                 if (r >= frozenRows && hiddenRows.includes(r)) continue;
-                if (r >= frozenRows && pageRows.indexOf(r) === -1) continue;
+                // Skip data rows filtered out
+                if (r >= frozenRows && !visibleRows.includes(r)) continue;
 
-                var row = rows[r] || {};
-                var cells = row.values || [];
-                var h = rowHeights[r] || 21;
-                var isFrozen = r < frozenRows;
+                const row = rows[r] || {};
+                const cells = row.values || [];
+                const h = rowHeights[r] || 21;
+                const isFrozen = r < frozenRows;
 
-                html += '<tr style="height:' + h + 'px">';
+                html += `<tr style="height:${h}px">`;
 
-                if (isFrozen) {
-                    if (r === 0) {
-                        var topOffset = stickyOffsets[0] || 0;
-                        html += '<th rowspan="' + frozenRows + '" style="position:sticky;left:0;top:' + topOffset + 'px;z-index:15;">#</th>';
-                    }
-                } else {
-                    var displayRowNum = totalVisibleRows.indexOf(r) + 1;
-                    html += '<td style="position:sticky;left:0;z-index:10;background:#f8f9fa;font-weight:600;color:#5f6368;text-align:center;border-right:1px solid #dadce0;">' + displayRowNum + '</td>';
-                }
-
-                for (var c = 0; c < maxCols; c++) {
+                for (let c = 0; c < maxCols; c++) {
+                    // Skip hidden columns
                     if (hiddenCols.includes(c)) continue;
                     if (covered[r][c]) continue;
 
-                    var cell = cells[c] || {};
-                    var fmt = cell.effectiveFormat;
-                    var val = cell.formattedValue || '';
-                    var style = buildCellStyle(fmt);
-                    var merge = mergeInfo[r][c];
+                    const cell = cells[c] || {};
+                    const fmt = cell.effectiveFormat;
+                    const val = cell.formattedValue || '';
+                    const style = buildCellStyle(fmt);
+                    const merge = mergeInfo[r][c];
 
-                    var attrs = [];
-                    var inlineStyle = style;
+                    const attrs = [];
+                    let inlineStyle = style;
                     if (isFrozen) {
-                        inlineStyle = (inlineStyle ? inlineStyle + ';' : '') + 'position:sticky;top:' + stickyOffsets[r] + 'px;z-index:5;';
+                        inlineStyle = (inlineStyle ? inlineStyle + ';' : '') + `position:sticky;top:${stickyOffsets[r]}px;z-index:10;`;
                     }
-                    if (inlineStyle) attrs.push('style="' + inlineStyle.replace(/"/g, '&quot;') + '"');
+                    if (inlineStyle) attrs.push(`style="${inlineStyle.replace(/"/g,'&quot;')}"`);
                     if (merge) {
-                        var visibleSpan = 0;
-                        for (var mc = c; mc < c + merge.colspan && mc < maxCols; mc++) {
+                        // Adjust colspan for hidden columns within the merge
+                        let visibleSpan = 0;
+                        for (let mc = c; mc < c + merge.colspan && mc < maxCols; mc++) {
                             if (!hiddenCols.includes(mc)) visibleSpan++;
                         }
-                        if (visibleSpan > 1) attrs.push('colspan="' + visibleSpan + '"');
-                        if (merge.rowspan > 1) attrs.push('rowspan="' + merge.rowspan + '"');
+                        if (visibleSpan > 1) attrs.push(`colspan="${visibleSpan}"`);
+                        if (merge.rowspan > 1) attrs.push(`rowspan="${merge.rowspan}"`);
                     }
+                    const w = colWidths[c] || 100;
+                    attrs.push(`width="${w}"`);
 
-                    var tag = isFrozen ? 'th' : 'td';
-                    var cellContent = escapeHtml(val);
-
-                    if (r === headerRowIdx) {
-                        var sortClass = sortState.col === c ? (sortState.dir === 'asc' ? 'sort-asc' : 'sort-desc') : '';
-                        if (sortClass) attrs.push('class="' + sortClass + '"');
-                        attrs.push('onclick="sortByColumn(' + c + ')"');
-                        cellContent += getSortIcon(c);
-                    }
-
-                    html += '<' + tag + ' ' + attrs.join(' ') + '>' + cellContent + '</' + tag + '>';
+                    html += `<td ${attrs.join(' ')}>${escapeHtml(val)}</td>`;
                 }
                 html += '</tr>';
             }
 
             html += '</table>';
-            var hrs = Math.round(AUTO_REFRESH_MS / 3600000);
-            var showingFrom = totalVisibleRows.length > 0 ? startIdx + 1 : 0;
-            var showingTo = Math.min(startIdx + rowsPerPage, totalVisibleRows.length);
-            html += '<div class="caption">Showing ' + showingFrom + '-' + showingTo + ' of ' + totalVisibleRows.length + ' filtered rows (' + (maxRows - dataStart) + ' total data rows). Auto-refresh: every ' + hrs + ' hour' + (hrs > 1 ? 's' : '') + '.</div>';
+            const hrs = Math.round(AUTO_REFRESH_MS / 3600000);
+            html += `<div class="caption">Showing ${visibleRows.length} data rows of ${maxRows - dataStart} total. Hidden rows/cols excluded. Auto-refresh: every ${hrs} hour${hrs>1?'s':''}.</div>`;
             sheetArea.innerHTML = html;
-            rowCount.textContent = totalVisibleRows.length + ' rows';
-
-            updatePagination();
+            rowCount.textContent = `${visibleRows.length} rows`;
         }
 
         function buildTabs() {
-            var html = '';
-            allSheets.forEach(function(s, i) {
-                var title = s.properties && s.properties.title || 'Sheet ' + (i + 1);
-                var cls = i === currentIdx ? 'tab active' : 'tab';
-                html += '<div class="' + cls + '" data-idx="' + i + '" onclick="switchTab(' + i + ')">' + escapeHtml(title) + '</div>';
+            let html = '';
+            allSheets.forEach((s, i) => {
+                const title = s.properties && s.properties.title || `Sheet ${i+1}`;
+                const cls = i === currentIdx ? 'tab active' : 'tab';
+                html += `<div class="${cls}" data-idx="${i}" onclick="switchTab(${i})">${escapeHtml(title)}</div>`;
             });
             tabBar.innerHTML = html;
         }
 
         function switchTab(idx) {
             currentIdx = idx;
-            sortState = { col: null, dir: null };
-            currentPage = 1;
-            var tabs = document.querySelectorAll('.tab');
-            tabs.forEach(function(t) { t.classList.remove('active'); });
-            var activeTab = document.querySelector('.tab[data-idx="' + idx + '"]');
-            if (activeTab) activeTab.classList.add('active');
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tab[data-idx="${idx}"]`).classList.add('active');
             renderSheet(idx);
         }
 
+        // ---------- Actions ----------
         function showToast(msg) {
-            var t = document.getElementById('toast');
+            const t = document.getElementById('toast');
             t.textContent = msg;
             t.classList.add('show');
-            setTimeout(function() { t.classList.remove('show'); }, 2000);
+            setTimeout(() => t.classList.remove('show'), 2000);
         }
 
         function doSearch() {
             searchTerm = searchBox.value.trim();
-            sortState = { col: null, dir: null };
-            currentPage = 1;
             renderSheet(currentIdx);
+        }
+
+        function doFilter() {
+            filterVal = filterBox.value;
+            renderSheet(currentIdx);
+        }
+
+        function toggleDark() {
+            isDark = !isDark;
+            document.body.classList.toggle('dark', isDark);
+            showToast(isDark ? 'Dark mode enabled' : 'Light mode enabled');
         }
 
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(function() {});
+                document.documentElement.requestFullscreen().catch(() => {});
                 showToast('Fullscreen enabled');
             } else {
                 document.exitFullscreen();
@@ -750,60 +840,73 @@
             }
         }
 
+        // ---------- API Fetch ----------
         async function loadSheet() {
-            sheetArea.innerHTML = '<div class="loading-screen"><div class="spinner"></div><div>Fetching data from Google Sheets API...</div></div>';
+            sheetArea.innerHTML = `
+                <div class="loading-screen">
+                    <div class="spinner"></div>
+                    <div>Fetching data from Google Sheets API...</div>
+                </div>`;
             subtotalBar.innerHTML = '';
-            paginationBar.style.display = 'none';
             statusText.textContent = 'Loading...';
             statusDot.className = 'status-dot';
 
             try {
-                var url;
+                let url;
                 if (DATA_RANGE) {
-                    var range = SHEET_NAME ? SHEET_NAME + '!' + DATA_RANGE : DATA_RANGE;
-                    url = 'https://sheets.googleapis.com/v4/spreadsheets/' + SPREADSHEET_ID + '?includeGridData=true&ranges=' + encodeURIComponent(range) + '&key=' + API_KEY;
+                    const range = SHEET_NAME ? `${SHEET_NAME}!${DATA_RANGE}` : DATA_RANGE;
+                    url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}?includeGridData=true&ranges=${encodeURIComponent(range)}&key=${API_KEY}`;
                 } else {
-                    url = 'https://sheets.googleapis.com/v4/spreadsheets/' + SPREADSHEET_ID + '?includeGridData=true&key=' + API_KEY;
-                    if (SHEET_NAME) url += '&ranges=' + encodeURIComponent(SHEET_NAME);
+                    url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}?includeGridData=true&key=${API_KEY}`;
+                    if (SHEET_NAME) url += `&ranges=${encodeURIComponent(SHEET_NAME)}`;
                 }
 
-                var res = await fetch(url);
-                var data = await res.json();
+                const res = await fetch(url);
+                const data = await res.json();
 
                 if (!res.ok) {
-                    throw new Error(data.error && data.error.message ? data.error.message : 'HTTP ' + res.status);
+                    throw new Error(data.error && data.error.message ? data.error.message : `HTTP ${res.status}`);
                 }
                 if (!data.sheets || !data.sheets.length) {
                     throw new Error('No sheets found in this spreadsheet.');
                 }
 
+                // Auto-set page title from spreadsheet name
                 spreadsheetName = data.properties && data.properties.title || 'Sheet Viewer';
                 pageTitle.textContent = spreadsheetName;
 
                 allSheets = data.sheets;
                 currentIdx = 0;
-                sortState = { col: null, dir: null };
-                currentPage = 1;
                 buildTabs();
                 renderSheet(0);
 
-                statusText.textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+                statusText.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
                 statusDot.className = 'status-dot';
 
                 if (autoTimer) clearInterval(autoTimer);
                 if (AUTO_REFRESH_MS > 0) {
-                    autoTimer = setInterval(function() { loadSheet(); }, AUTO_REFRESH_MS);
+                    autoTimer = setInterval(() => loadSheet(), AUTO_REFRESH_MS);
                 }
 
             } catch (err) {
                 statusDot.className = 'status-dot error';
                 statusText.textContent = 'Error';
-                sheetArea.innerHTML = '<div class="error-box"><strong>Failed to load sheet</strong><br><br>' + escapeHtml(err.message) + '<br><br><small>1. Make sure the sheet is published or shared publicly</small><br><small>2. Double-check your Spreadsheet ID and API Key</small><br><small>3. Verify the Google Sheets API is enabled in Cloud Console</small></div>';
+                sheetArea.innerHTML = `
+                    <div class="error-box">
+                        <strong>Failed to load sheet</strong><br><br>
+                        ${escapeHtml(err.message)}<br><br>
+                        <small>1. Make sure the sheet is published or shared publicly</small><br>
+                        <small>2. Double-check your Spreadsheet ID and API Key</small><br>
+                        <small>3. Verify the Google Sheets API is enabled in Cloud Console</small>
+                    </div>
+                `;
                 subtotalBar.innerHTML = '';
-                paginationBar.style.display = 'none';
                 console.error(err);
             }
         }
+
+        // Start
+        
     </script>
 </body>
 </html>
