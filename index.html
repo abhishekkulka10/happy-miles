@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#188038">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#188038">
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjogIlNoZWV0IFZpZXdlciIsICJzaG9ydF9uYW1lIjogIlNoZWV0cyIsICJzdGFydF91cmwiOiAiLiIsICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLCAiYmFja2dyb3VuZF9jb2xvciI6ICIjZjhmOWZhIiwgInRoZW1lX2NvbG9yIjogIiMxODgwMzgiLCAiaWNvbnMiOiBbeyJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxOTInIGhlaWdodD0nMTkyJyUzRSUzQ3JlY3Qgd2lkdGg9JzE5MicgaGVpZ2h0PScxOTInIGZpbGw9JyUyMzE4ODAzOCcgcng9JzI0Jy8lM0UlM0N0ZXh0IHg9Jzk2JyB5PScxMzAnIGZvbnQtc2l6ZT0nMTEwJyBmaWxsPSd3aGl0ZScgdGV4dC1hbmNob3I9J21pZGRsZScgZm9udC1mYW1pbHk9J0FyaWFsLHNhbnMtc2VyaWYnIGZvbnQtd2VpZ2h0PSdib2xkJyUzRVMlM0MvdGV4dCUzRSUzQy9zdmclM0UiLCAic2l6ZXMiOiAiMTkyeDE5MiIsICJ0eXBlIjogImltYWdlL3N2Zyt4bWwifV19">
     <title>Sheet Viewer</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -38,15 +41,15 @@
         .subtotal-bar .st-key { color: #5f6368; font-size: 12px; }
         .subtotal-bar .st-val { font-weight: 600; color: #202124; font-variant-numeric: tabular-nums; }
         .sheet-wrap { flex: 1; overflow: auto; padding: 0 16px 16px 16px; }
-        .sheet-table { border-collapse: collapse; table-layout: fixed; background: #fff; box-shadow: 0 1px 3px rgba(60,64,67,0.15); width: 100%; }
-        .sheet-table td, .sheet-table th { padding: 4px 6px; font-size: 13px; border: 1px solid #e8eaed; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
+        .sheet-table { border-collapse: collapse; table-layout: auto; background: #fff; box-shadow: 0 1px 3px rgba(60,64,67,0.15); width: 100%; min-width: 100%; }
+        .sheet-table td, .sheet-table th { padding: 5px 8px; font-size: 13px; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; border: 1px solid #e8eaed; }
         .sheet-table th { background: #f8f9fa; font-weight: 600; color: #188038; cursor: pointer; user-select: none; position: sticky; top: 0; z-index: 5; }
         .sheet-table th:hover { background: #e6f4ea; }
-        .sheet-table th .sort-icon { float: right; color: #999; font-size: 10px; margin-left: 4px; }
-        .sheet-table th.sort-asc .sort-icon::after { content: '▲'; color: #188038; }
-        .sheet-table th.sort-desc .sort-icon::after { content: '▼'; color: #188038; }
-        .sheet-table td:first-child, .sheet-table th:first-child { background: #f8f9fa; font-weight: 600; color: #5f6368; width: 44px; text-align: center; position: sticky; left: 0; z-index: 6; border-right: 1px solid #dadce0; }
-        .sheet-table th:first-child { z-index: 7; cursor: default; }
+        .sheet-table th .sort-icon { margin-left: 6px; color: #9aa0a6; font-size: 10px; }
+        .sheet-table th.sort-asc .sort-icon { color: #188038; }
+        .sheet-table th.sort-desc .sort-icon { color: #188038; }
+        .sheet-table td:first-child, .sheet-table th:first-child { background: #f8f9fa; font-weight: 600; color: #5f6368; width: 44px; min-width: 44px; max-width: 44px; text-align: center; position: sticky; left: 0; z-index: 10; border-right: 1px solid #dadce0; }
+        .sheet-table th:first-child { z-index: 15; cursor: default; }
         .loading-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 50vh; gap: 16px; color: #5f6368; }
         .spinner { width: 36px; height: 36px; border: 3px solid #e8eaed; border-top-color: #188038; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -54,25 +57,52 @@
         .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); background: #323232; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 13px; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 200; }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
         .caption { margin-top: 12px; font-size: 12px; color: #5f6368; text-align: center; }
-        .no-results { text-align: center; padding: 40px; color: #5f6368; font-size: 14px; }
         .pagination-bar { background: #fff; border-top: 1px solid #e8eaed; padding: 10px 16px; display: flex; align-items: center; justify-content: center; gap: 16px; flex-shrink: 0; font-size: 13px; }
-        .pagination-bar button { padding: 5px 14px; border: 1px solid #dadce0; background: #fff; border-radius: 4px; font-size: 12px; cursor: pointer; }
+        .pagination-bar button { padding: 5px 14px; border: 1px solid #dadce0; background: #fff; border-radius: 4px; font-size: 12px; cursor: pointer; color: #3c4043; }
         .pagination-bar button:hover:not(:disabled) { background: #f1f3f4; }
         .pagination-bar button:disabled { opacity: 0.4; cursor: not-allowed; }
+        .page-info { color: #5f6368; font-size: 12px; }
         .page-size { padding: 4px 8px; border: 1px solid #dadce0; border-radius: 4px; font-size: 12px; }
+        .install-bar { background: #e8f0fe; border: 1px solid #188038; border-radius: 8px; padding: 10px 16px; margin: 10px 16px 0 16px; display: none; align-items: center; gap: 12px; font-size: 13px; flex-shrink: 0; }
+        .install-bar.show { display: flex; }
+        .install-bar button { margin-left: auto; background: #188038; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; font-size: 12px; cursor: pointer; }
+        .install-bar button:hover { background: #137333; }
         #loginOverlay { position: fixed; inset: 0; background: #f8f9fa; z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .login-card { background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 380px; text-align: center; }
         .login-logo { width: 56px; height: 56px; background: #188038; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: white; font-weight: 700; font-size: 22px; }
         .login-card h2 { margin-bottom: 6px; color: #202124; font-size: 22px; }
         .login-card p { color: #5f6368; font-size: 14px; margin-bottom: 28px; }
-        .login-input { width: 100%; padding: 12px 14px; border: 1px solid #dadce0; border-radius: 6px; margin-bottom: 14px; font-size: 14px; font-family: inherit; outline: none; }
+        .login-input { width: 100%; padding: 12px 14px; border: 1px solid #dadce0; border-radius: 6px; margin-bottom: 14px; font-size: 14px; font-family: inherit; outline: none; transition: border 0.15s; }
         .login-input:focus { border-color: #188038; box-shadow: 0 0 0 3px rgba(24,128,56,0.12); }
-        .login-btn { width: 100%; padding: 12px; background: #188038; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .login-btn { width: 100%; padding: 12px; background: #188038; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
         .login-btn:hover { background: #137333; }
+        .login-btn:active { transform: scale(0.98); }
+        .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .login-error { color: #ea4335; font-size: 13px; margin-top: 12px; display: none; }
         .login-hint { margin-top: 20px; padding-top: 16px; border-top: 1px solid #e8eaed; font-size: 12px; color: #9aa0a6; line-height: 1.5; }
-        @media (max-width: 768px) { .banner { font-size: 15px; padding: 10px; } .topbar { padding: 8px 10px; flex-wrap: wrap; } .title { font-size: 14px; } .btn { padding: 5px 10px; font-size: 11px; } .actions { gap: 4px; } .toolbar { padding: 8px 10px; } .subtotal-bar { padding: 6px 10px; gap: 12px; font-size: 12px; } .search-wrap { max-width: 100%; min-width: 140px; } .sheet-wrap { padding: 0 8px 8px 8px; } .sheet-table td, .sheet-table th { font-size: 12px; padding: 3px 5px; } .sheet-table td:first-child, .sheet-table th:first-child { width: 36px; padding: 3px; } .tab { padding: 8px 14px; font-size: 12px; } .status { display: none; } .count { width: 100%; text-align: right; margin-top: 4px; } .login-card { padding: 28px 20px; } .pagination-bar { gap: 8px; padding: 8px 10px; } }
+        .login-debug { margin-top: 10px; padding: 8px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; font-size: 11px; color: #856404; display: none; text-align: left; word-break: break-all; }
+        @media (max-width: 768px) {
+            .banner { font-size: 15px; padding: 10px; }
+            .topbar { padding: 8px 10px; flex-wrap: wrap; }
+            .title { font-size: 14px; }
+            .btn { padding: 5px 10px; font-size: 11px; }
+            .actions { gap: 4px; }
+            .toolbar { padding: 8px 10px; }
+            .subtotal-bar { padding: 6px 10px; gap: 12px; font-size: 12px; }
+            .search-wrap { max-width: 100%; min-width: 140px; }
+            .sheet-wrap { padding: 0 8px 8px 8px; }
+            .sheet-table td, .sheet-table th { font-size: 12px; padding: 4px 6px; }
+            .sheet-table td:first-child, .sheet-table th:first-child { width: 36px; min-width: 36px; max-width: 36px; padding: 4px; }
+            .tab { padding: 8px 14px; font-size: 12px; }
+            .status { display: none; }
+            .count { width: 100%; text-align: right; margin-top: 4px; }
+            .login-card { padding: 28px 20px; }
+            .pagination-bar { gap: 8px; padding: 8px 10px; }
+            .install-bar { margin: 8px 10px 0 10px; padding: 8px 10px; font-size: 12px; }
+        }
     </style>
+    <base target="_blank">
+<base target="_blank">
 </head>
 <body>
     <div id="loginOverlay">
@@ -82,11 +112,16 @@
             <p>Enter your ID and password to view your data.</p>
             <input type="text" class="login-input" id="loginId" placeholder="User ID" autocomplete="username">
             <input type="password" class="login-input" id="loginPassword" placeholder="Password" autocomplete="current-password">
-            <button class="login-btn" onclick="doLogin()">Sign In</button>
+            <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
             <div class="login-error" id="loginError">Invalid ID or password</div>
-            <div class="login-hint"><strong>Demo:</strong> ID = <code>demo</code> or <code>DEMO</code><br>Password = <code>demo123</code></div>
+            <div class="login-debug" id="loginDebug"></div>
+            <div class="login-hint">
+                <strong>Demo:</strong> ID = <code>demo</code> , Password = <code>demo123</code><br>
+                Add your own users in the CONFIG section of the code.
+            </div>
         </div>
     </div>
+
     <div class="banner" id="banner">Sheet Viewer</div>
     <div class="topbar">
         <div class="logo">S</div>
@@ -96,9 +131,16 @@
             <button class="btn primary" onclick="toggleFullscreen()">&#x26F6; Full</button>
             <button class="btn" onclick="doLogout()" style="border-color:#ea4335;color:#ea4335;">Logout</button>
         </div>
-        <div class="status"><span class="status-dot" id="statusDot"></span><span id="statusText">Loading...</span></div>
+        <div class="status">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">Loading...</span>
+        </div>
     </div>
     <div class="tabs" id="tabBar"></div>
+    <div class="install-bar" id="installBar">
+        <span>&#128242; Add Sheet Viewer to your home screen</span>
+        <button onclick="promptInstall()">Install App</button>
+    </div>
     <div class="toolbar">
         <div class="search-wrap">
             <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
@@ -108,71 +150,142 @@
     </div>
     <div class="subtotal-bar" id="subtotalBar"></div>
     <div class="sheet-wrap" id="sheetArea">
-        <div class="loading-screen"><div class="spinner"></div><div>Please sign in to load data.</div></div>
+        <div class="loading-screen">
+            <div class="spinner"></div>
+            <div>Please sign in to load data.</div>
+        </div>
     </div>
     <div class="pagination-bar" id="paginationBar" style="display:none;">
         <button onclick="changePage(-1)" id="btnPrev">&#x25C0; Prev</button>
         <span class="page-info" id="pageInfo">Page 1 of 1</span>
         <button onclick="changePage(1)" id="btnNext">Next &#x25B6;</button>
         <select class="page-size" id="pageSize" onchange="changePageSize()">
-            <option value="100">100 / page</option><option value="250">250 / page</option><option value="500" selected>500 / page</option><option value="1000">1000 / page</option>
+            <option value="100">100 / page</option>
+            <option value="250">250 / page</option>
+            <option value="500" selected>500 / page</option>
+            <option value="1000">1000 / page</option>
         </select>
     </div>
-    <div class="caption" id="caption"></div>
     <div class="toast" id="toast"></div>
+
     <script>
+        function setDebug(msg) {
+            var el = document.getElementById('loginDebug');
+            if (el) { el.textContent = msg; el.style.display = 'block'; }
+            console.log('[SheetViewer]', msg);
+        }
+
         const USERS = {
-            'demo': { password: 'demo123', companyName: 'Demo Company', spreadsheetId: '1x0BnUziYQemws3Wd0vzsjGxLBoVeLX02fQzdJ6CEuLg', sheetName: '', dataRange: '' },
+            'demo': {
+                password: 'demo123',
+                companyName: 'Happy Miles Incorporated',
+                spreadsheetId: '1x0BnUziYQemws3Wd0vzsjGxLBoVeLX02fQzdJ6CEuLg',
+                sheetName: '',
+                dataRange: ''
+            },
+            'abhi': {
+                password: 'admin',
+                companyName: 'Happy Miles Admin',
+                spreadsheetId: '1x0BnUziYQemws3Wd0vzsjGxLBoVeLX02fQzdJ6CEuLg',
+                sheetName: '',
+                dataRange: ''
+            },
         };
+
         const AUTO_REFRESH_MS = 10800000;
         const API_KEY = 'AIzaSyBDLyEYzxIbwIfpiZj9745vBhbE0_lRYEk';
 
-        let COMPANY_NAME = 'Sheet Viewer';
-        let SPREADSHEET_ID = '';
-        let SHEET_NAME = '';
-        let DATA_RANGE = '';
+        var COMPANY_NAME = 'Sheet Viewer';
+        var SPREADSHEET_ID = '';
+        var SHEET_NAME = '';
+        var DATA_RANGE = '';
 
-        const sheetArea = document.getElementById('sheetArea');
-        const statusText = document.getElementById('statusText');
-        const statusDot = document.getElementById('statusDot');
-        const pageTitle = document.getElementById('pageTitle');
-        const tabBar = document.getElementById('tabBar');
-        const searchBox = document.getElementById('searchBox');
-        const rowCount = document.getElementById('rowCount');
-        const subtotalBar = document.getElementById('subtotalBar');
-        const paginationBar = document.getElementById('paginationBar');
-        const pageInfo = document.getElementById('pageInfo');
-        const btnPrev = document.getElementById('btnPrev');
-        const btnNext = document.getElementById('btnNext');
+        var sheetArea = document.getElementById('sheetArea');
+        var statusText = document.getElementById('statusText');
+        var statusDot = document.getElementById('statusDot');
+        var pageTitle = document.getElementById('pageTitle');
+        var tabBar = document.getElementById('tabBar');
+        var searchBox = document.getElementById('searchBox');
+        var rowCount = document.getElementById('rowCount');
+        var subtotalBar = document.getElementById('subtotalBar');
+        var paginationBar = document.getElementById('paginationBar');
+        var pageInfo = document.getElementById('pageInfo');
+        var btnPrev = document.getElementById('btnPrev');
+        var btnNext = document.getElementById('btnNext');
 
-        let allSheets = [];
-        let currentIdx = 0;
-        let searchTerm = '';
-        let autoTimer = null;
-        let currentPage = 1;
-        let rowsPerPage = 500;
-        let totalVisibleRows = [];
-        let sortCol = -1;
-        let sortDir = 0;
+        var allSheets = [];
+        var spreadsheetName = 'Sheet Viewer';
+        var currentIdx = 0;
+        var searchTerm = '';
+        var autoTimer = null;
+        var sortState = { col: null, dir: null };
+        var currentPage = 1;
+        var rowsPerPage = 500;
+        var totalVisibleRows = [];
+        var allRowData = [];
+        var allHeader = [];
+        var deferredPrompt = null;
+
+        // PWA
+        if ('serviceWorker' in navigator) {
+            try {
+                var swCode = "self.addEventListener('install',function(e){e.waitUntil(caches.open('sv1').then(function(c){return c.addAll(['./']);}));self.skipWaiting();});self.addEventListener('activate',function(e){self.clients.claim();});self.addEventListener('fetch',function(e){e.respondWith(caches.match(e.request).then(function(r){return r||fetch(e.request);}));});";
+                navigator.serviceWorker.register(URL.createObjectURL(new Blob([swCode],{type:'application/javascript'})));
+            } catch(e) { console.log('SW skip', e); }
+        }
+        window.addEventListener('beforeinstallprompt', function(e) {
+            e.preventDefault();
+            deferredPrompt = e;
+            var bar = document.getElementById('installBar');
+            if (bar) bar.classList.add('show');
+        });
+        function promptInstall() {
+            if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then(function(){deferredPrompt=null;}); }
+        }
 
         function doLogin() {
-            var rawId = document.getElementById('loginId').value.trim();
-            var id = rawId.toLowerCase();
+            setDebug('Login clicked');
+            var id = document.getElementById('loginId').value.trim().toLowerCase();
             var pass = document.getElementById('loginPassword').value;
+            var btn = document.getElementById('loginBtn');
+            var err = document.getElementById('loginError');
+
+            setDebug('ID: ' + id + ' | Pass len: ' + pass.length);
+
             var user = USERS[id];
-            if (user && user.password === pass) {
-                COMPANY_NAME = user.companyName;
-                SPREADSHEET_ID = user.spreadsheetId;
-                SHEET_NAME = user.sheetName || '';
-                DATA_RANGE = user.dataRange || '';
-                document.getElementById('banner').textContent = COMPANY_NAME;
-                document.getElementById('loginOverlay').style.display = 'none';
-                document.getElementById('loginError').style.display = 'none';
-                loadSheet();
-            } else {
-                document.getElementById('loginError').textContent = 'Invalid ID or password';
-                document.getElementById('loginError').style.display = 'block';
+            if (!user) {
+                setDebug('User not found: ' + id);
+                err.textContent = 'User ID not found';
+                err.style.display = 'block';
+                return;
             }
+            if (user.password !== pass) {
+                setDebug('Wrong password for: ' + id);
+                err.textContent = 'Wrong password';
+                err.style.display = 'block';
+                return;
+            }
+
+            setDebug('Login OK, loading sheet...');
+            btn.disabled = true;
+            btn.textContent = 'Loading...';
+            err.style.display = 'none';
+
+            COMPANY_NAME = user.companyName;
+            SPREADSHEET_ID = user.spreadsheetId;
+            SHEET_NAME = user.sheetName || '';
+            DATA_RANGE = user.dataRange || '';
+
+            document.getElementById('banner').textContent = COMPANY_NAME;
+            document.getElementById('loginOverlay').style.display = 'none';
+
+            loadSheet().then(function() {
+                setDebug('Sheet loaded successfully');
+            }).catch(function(e) {
+                setDebug('Sheet load error: ' + e.message);
+                btn.disabled = false;
+                btn.textContent = 'Sign In';
+            });
         }
 
         function doLogout() { location.reload(); }
@@ -187,9 +300,9 @@
         function escapeHtml(text) {
             if (text == null) return '';
             var str = String(text);
-            var out = '';
-            for (var i = 0; i < str.length; i++) {
-                var ch = str.charCodeAt(i);
+            var out = '', i = 0, ch;
+            for (; i < str.length; i++) {
+                ch = str.charCodeAt(i);
                 if (ch === 38) out += '&amp;';
                 else if (ch === 60) out += '&lt;';
                 else if (ch === 62) out += '&gt;';
@@ -235,8 +348,7 @@
             if (fmt.wrapStrategy === 'WRAP') { s.push('white-space:normal'); s.push('word-wrap:break-word'); }
             var sides = ['top','bottom','left','right'];
             var sm = {SOLID:'solid', DOTTED:'dotted', DASHED:'dashed', DOUBLE:'double', SOLID_MEDIUM:'solid', SOLID_THICK:'solid'};
-            for (var si = 0; si < sides.length; si++) {
-                var side = sides[si];
+            sides.forEach(function(side) {
                 var b = fmt.borders && fmt.borders[side];
                 if (b && b.style && b.style !== 'NONE') {
                     var w = b.width || (b.style === 'SOLID_THICK' ? 2 : b.style === 'SOLID_MEDIUM' ? 1.5 : 1);
@@ -244,7 +356,7 @@
                     var col = colorToCss(b.color) || '#999';
                     s.push('border-' + side + ':' + w + 'px ' + st + ' ' + col);
                 }
-            }
+            });
             if (fmt.padding) {
                 var p = fmt.padding;
                 s.push('padding:' + (p.top || 2) + 'px ' + (p.right || 6) + 'px ' + (p.bottom || 2) + 'px ' + (p.left || 6) + 'px');
@@ -253,23 +365,14 @@
         }
 
         function processMerges(mergeCells, maxRows, maxCols) {
-            var covered = [];
-            var mergeInfo = [];
-            for (var r = 0; r < maxRows; r++) {
-                covered[r] = [];
-                mergeInfo[r] = [];
-                for (var c = 0; c < maxCols; c++) {
-                    covered[r][c] = false;
-                    mergeInfo[r][c] = null;
-                }
-            }
-            var merges = mergeCells || [];
-            for (var m = 0; m < merges.length; m++) {
-                var rng = merges[m].range || {};
-                var sr = rng.startRowIndex || 0;
-                var er = rng.endRowIndex || maxRows;
-                var sc = rng.startColumnIndex || 0;
-                var ec = rng.endColumnIndex || maxCols;
+            var covered = Array.from({length: maxRows}, function() { return Array(maxCols).fill(false); });
+            var mergeInfo = Array.from({length: maxRows}, function() { return Array(maxCols).fill(null); });
+            (mergeCells || []).forEach(function(m) {
+                var r = m.range || {};
+                var sr = r.startRowIndex || 0;
+                var er = r.endRowIndex || maxRows;
+                var sc = r.startColumnIndex || 0;
+                var ec = r.endColumnIndex || maxCols;
                 for (var row = sr; row < er; row++) {
                     for (var col = sc; col < ec; col++) {
                         if (row < maxRows && col < maxCols) covered[row][col] = true;
@@ -282,13 +385,13 @@
                         colspan: Math.min(ec, maxCols) - sc
                     };
                 }
-            }
+            });
             return { covered: covered, mergeInfo: mergeInfo };
         }
 
         function parseNumber(str) {
             if (!str) return 0;
-            var cleaned = String(str).replace(/[$,\s]/g, '');
+            var cleaned = String(str).replace(/[\s$,%]/g, '').replace(/[€£¥]/g, '');
             var num = parseFloat(cleaned);
             return isNaN(num) ? 0 : num;
         }
@@ -301,19 +404,17 @@
 
         function getHiddenCols(columnMetadata) {
             var hidden = [];
-            var meta = columnMetadata || [];
-            for (var i = 0; i < meta.length; i++) {
-                if (meta[i].hiddenByUser) hidden.push(i);
-            }
+            (columnMetadata || []).forEach(function(meta, idx) {
+                if (meta.hiddenByUser) hidden.push(idx);
+            });
             return hidden;
         }
 
         function getHiddenRows(rowMetadata) {
             var hidden = [];
-            var meta = rowMetadata || [];
-            for (var i = 0; i < meta.length; i++) {
-                if (meta[i].hiddenByUser) hidden.push(i);
-            }
+            (rowMetadata || []).forEach(function(meta, idx) {
+                if (meta.hiddenByUser) hidden.push(idx);
+            });
             return hidden;
         }
 
@@ -325,13 +426,10 @@
                 for (var r = Math.min(3, data.rowData.length - 1); r >= 0; r--) {
                     var cells = data.rowData[r].values || [];
                     if (cells.length === 0) continue;
-                    var textCount = 0;
-                    for (var ci = 0; ci < cells.length; ci++) {
-                        var v = (cells[ci].formattedValue || '').trim();
-                        if (v.length > 0 && v.length < 30 && isNaN(parseFloat(v.replace(/[$,\s]/g,''))) && !v.match(/^\d{1,2}[-/]/)) {
-                            textCount++;
-                        }
-                    }
+                    var textCount = cells.filter(function(c) {
+                        var v = (c.formattedValue || '').trim();
+                        return v.length > 0 && v.length < 30 && isNaN(parseFloat(v.replace(/[\s$,]/g, ''))) && !v.match(/^\d{1,2}[-/]/);
+                    }).length;
                     if (textCount >= Math.max(2, cells.length * 0.5)) return r + 1;
                 }
             }
@@ -344,12 +442,12 @@
             for (var c = 0; c < maxCols; c++) {
                 var numCount = 0, totalCount = 0;
                 for (var r = dataStart; r < sampleLimit; r++) {
-                    if (hiddenRows.indexOf(r) >= 0) continue;
+                    if (hiddenRows.includes(r)) continue;
                     var cell = rows[r].values && rows[r].values[c];
                     var v = cell ? (cell.formattedValue || '').trim() : '';
                     if (!v) continue;
                     totalCount++;
-                    var cleaned = v.replace(/[$,\s]/g, '');
+                    var cleaned = v.replace(/[\s$,%]/g, '').replace(/[€£¥]/g, '');
                     if (!isNaN(parseFloat(cleaned)) && isFinite(cleaned)) numCount++;
                 }
                 if (totalCount > 0 && numCount / totalCount >= 0.7) numericCols.push(c);
@@ -357,65 +455,21 @@
             return numericCols;
         }
 
-        function showToast(msg) {
-            var t = document.getElementById('toast');
-            t.textContent = msg;
-            t.classList.add('show');
-            setTimeout(function() { t.classList.remove('show'); }, 2000);
-        }
-
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(function(){});
-                showToast('Fullscreen enabled');
+        function sortByColumn(colIdx) {
+            if (sortState.col === colIdx) {
+                if (sortState.dir === 'asc') sortState.dir = 'desc';
+                else if (sortState.dir === 'desc') { sortState.col = null; sortState.dir = null; }
             } else {
-                document.exitFullscreen();
-                showToast('Fullscreen exited');
+                sortState.col = colIdx;
+                sortState.dir = 'asc';
             }
-        }
-
-        function buildTabs() {
-            var html = '';
-            for (var i = 0; i < allSheets.length; i++) {
-                var s = allSheets[i];
-                var title = (s.properties && s.properties.title) || ('Sheet ' + (i + 1));
-                var cls = (i === currentIdx) ? 'tab active' : 'tab';
-                html += '<div class="' + cls + '" data-idx="' + i + '" onclick="switchTab(' + i + ')">' + escapeHtml(title) + '</div>';
-            }
-            tabBar.innerHTML = html;
-        }
-
-        function switchTab(idx) {
-            currentIdx = idx;
             currentPage = 1;
-            sortCol = -1;
-            sortDir = 0;
-            searchTerm = '';
-            searchBox.value = '';
-            var tabs = document.querySelectorAll('.tab');
-            for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
-            var activeTab = document.querySelector('.tab[data-idx="' + idx + '"]');
-            if (activeTab) activeTab.classList.add('active');
-            renderSheet(idx);
-        }
-
-        function doSearch() {
-            searchTerm = searchBox.value.trim();
-            currentPage = 1;
-            sortCol = -1;
-            sortDir = 0;
             renderSheet(currentIdx);
         }
 
-        function doSort(colIdx) {
-            if (sortCol === colIdx) {
-                sortDir = (sortDir + 1) % 3;
-            } else {
-                sortCol = colIdx;
-                sortDir = 1;
-            }
-            currentPage = 1;
-            renderSheet(currentIdx);
+        function getSortIcon(colIdx) {
+            if (sortState.col !== colIdx) return '<span class="sort-icon">&#x21C5;</span>';
+            return sortState.dir === 'asc' ? '<span class="sort-icon">&#x25B2;</span>' : '<span class="sort-icon">&#x25BC;</span>';
         }
 
         function changePage(delta) {
@@ -424,7 +478,7 @@
             if (newPage >= 1 && newPage <= maxPage) {
                 currentPage = newPage;
                 renderSheet(currentIdx);
-                sheetArea.scrollTop = 0;
+                document.getElementById('sheetArea').scrollTop = 0;
             }
         }
 
@@ -434,36 +488,40 @@
             renderSheet(currentIdx);
         }
 
+        function updatePagination() {
+            var total = totalVisibleRows.length;
+            if (total <= 100) {
+                paginationBar.style.display = 'none';
+                return;
+            }
+            paginationBar.style.display = 'flex';
+            var maxPage = Math.max(1, Math.ceil(total / rowsPerPage));
+            if (currentPage > maxPage) currentPage = maxPage;
+            pageInfo.textContent = 'Page ' + currentPage + ' of ' + maxPage + ' (' + total + ' rows)';
+            btnPrev.disabled = currentPage <= 1;
+            btnNext.disabled = currentPage >= maxPage;
+        }
+
         function exportCSV() {
             if (!allRowData.length) { showToast('No data to export'); return; }
             var csv = '';
-            for (var i = 0; i < allHeader.length; i++) {
-                csv += '"' + String(allHeader[i]).replace(/"/g, '""') + '"';
-                if (i < allHeader.length - 1) csv += ',';
-            }
-            csv += '\n';
-            for (var ri = 0; ri < totalVisibleRows.length; ri++) {
-                var rIdx = totalVisibleRows[ri];
+            csv += allHeader.map(function(h) { return '"' + String(h).replace(/"/g, '""') + '"'; }).join(',') + '
+';
+            totalVisibleRows.forEach(function(rIdx) {
                 var row = allRowData[rIdx];
-                if (!row) continue;
-                for (var ci = 0; ci < row.length; ci++) {
-                    csv += '"' + String(row[ci]).replace(/"/g, '""') + '"';
-                    if (ci < row.length - 1) csv += ',';
-                }
-                csv += '\n';
-            }
+                if (!row) return;
+                csv += row.map(function(cell) { return '"' + String(cell).replace(/"/g, '""') + '"'; }).join(',') + '
+';
+            });
             var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             var link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = COMPANY_NAME.replace(/\s+/g, '_') + '_export.csv';
+            link.download = (COMPANY_NAME.replace(/\s+/g, '_') || 'data') + '_export.csv';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             showToast('CSV downloaded');
         }
-
-        var allRowData = [];
-        var allHeader = [];
 
         function renderSheet(idx) {
             var sheet = allSheets[idx];
@@ -480,17 +538,9 @@
             var rows = data.rowData;
             var colMeta = data.columnMetadata || [];
             var rowMeta = data.rowMetadata || [];
-            var maxCols = 0;
-            for (var ri = 0; ri < rows.length; ri++) {
-                var len = (rows[ri].values || []).length;
-                if (len > maxCols) maxCols = len;
-            }
-            if (colMeta.length > maxCols) maxCols = colMeta.length;
+            var maxCols = Math.max.apply(null, rows.map(function(r) { return (r.values || []).length; }).concat([colMeta.length]));
             var maxRows = rows.length;
-            var colWidths = [];
-            for (var ci = 0; ci < colMeta.length; ci++) colWidths.push(colMeta[ci].pixelSize || 100);
-            var rowHeights = [];
-            for (var ri = 0; ri < rowMeta.length; ri++) rowHeights.push(rowMeta[ri].pixelSize || 21);
+            var rowHeights = rowMeta.map(function(m) { return m.pixelSize || 21; });
             var mergeCells = sheet.mergeCells || [];
             var pm = processMerges(mergeCells, maxRows, maxCols);
             var covered = pm.covered;
@@ -501,10 +551,7 @@
             var frozenRows = getFrozenRowCount(sheet);
             var headerRowIdx = Math.min(frozenRows - 1, maxRows - 1);
             var headerCells = rows[headerRowIdx].values || [];
-            var header = [];
-            for (var ci = 0; ci < headerCells.length; ci++) {
-                header.push((headerCells[ci].formattedValue || '').trim());
-            }
+            var header = headerCells.map(function(c) { return (c.formattedValue || '').trim(); });
 
             var dataStart = headerRowIdx + 1;
             var numericCols = detectNumericColumns(rows, dataStart, maxCols, hiddenRows);
@@ -514,78 +561,64 @@
             allHeader = header;
 
             for (var r = dataStart; r < maxRows; r++) {
-                if (hiddenRows.indexOf(r) >= 0) continue;
+                if (hiddenRows.includes(r)) continue;
                 var row = rows[r] || {};
                 var cells = row.values || [];
-                var vals = [];
-                for (var ci = 0; ci < cells.length; ci++) {
-                    vals.push((cells[ci].formattedValue || '').trim());
-                }
-
-                var rowData = [];
-                for (var ci = 0; ci < cells.length; ci++) {
-                    rowData.push(cells[ci].formattedValue || '');
-                }
-                allRowData[r] = rowData;
+                var vals = cells.map(function(c) { return (c.formattedValue || '').trim(); });
+                allRowData[r] = cells.map(function(c) { return c.formattedValue || ''; });
 
                 if (searchTerm) {
                     var term = searchTerm.toLowerCase();
-                    var found = false;
-                    for (var vi = 0; vi < vals.length; vi++) {
-                        if (vals[vi].toLowerCase().indexOf(term) >= 0) { found = true; break; }
-                    }
+                    var found = vals.some(function(v) { return v.toLowerCase().indexOf(term) !== -1; });
                     if (!found) continue;
                 }
-
                 totalVisibleRows.push(r);
             }
 
-            if (sortCol >= 0 && sortDir > 0) {
+            if (sortState.col !== null && sortState.dir) {
+                var sortCol = sortState.col;
                 totalVisibleRows.sort(function(a, b) {
-                    var cellA = rows[a].values && rows[a].values[sortCol];
-                    var cellB = rows[b].values && rows[b].values[sortCol];
-                    var valA = cellA ? (cellA.formattedValue || '') : '';
-                    var valB = cellB ? (cellB.formattedValue || '') : '';
+                    var valA = (rows[a].values && rows[a].values[sortCol] ? rows[a].values[sortCol].formattedValue : '').trim();
+                    var valB = (rows[b].values && rows[b].values[sortCol] ? rows[b].values[sortCol].formattedValue : '').trim();
                     var numA = parseNumber(valA);
                     var numB = parseNumber(valB);
-                    if (numA !== 0 || numB !== 0) {
-                        return sortDir === 1 ? numA - numB : numB - numA;
+                    var cmp;
+                    if (numA !== 0 && numB !== 0) {
+                        cmp = numA - numB;
+                    } else if (numA !== 0) {
+                        cmp = -1;
+                    } else if (numB !== 0) {
+                        cmp = 1;
+                    } else {
+                        cmp = valA.localeCompare(valB);
                     }
-                    var strA = valA.toLowerCase();
-                    var strB = valB.toLowerCase();
-                    if (strA < strB) return sortDir === 1 ? -1 : 1;
-                    if (strA > strB) return sortDir === 1 ? 1 : -1;
-                    return 0;
+                    return sortState.dir === 'asc' ? cmp : -cmp;
                 });
             }
 
-            var subtotals = [];
-            for (var c = 0; c < maxCols; c++) subtotals.push(null);
+            var subtotals = new Array(maxCols).fill(null);
             if (numericCols.length > 0 && totalVisibleRows.length > 0) {
-                for (var ni = 0; ni < numericCols.length; ni++) {
-                    var colIdx = numericCols[ni];
-                    if (hiddenCols.indexOf(colIdx) >= 0) continue;
+                numericCols.forEach(function(colIdx) {
+                    if (hiddenCols.includes(colIdx)) return;
                     var sum = 0;
-                    for (var ri = 0; ri < totalVisibleRows.length; ri++) {
-                        var rIdx = totalVisibleRows[ri];
-                        var cell = rows[rIdx].values && rows[rIdx].values[colIdx];
+                    totalVisibleRows.forEach(function(r) {
+                        var cell = rows[r].values && rows[r].values[colIdx];
                         sum += parseNumber(cell ? cell.formattedValue : '');
-                    }
+                    });
                     subtotals[colIdx] = formatNumber(sum);
-                }
+                });
             }
 
             var barHtml = '';
             if (numericCols.length > 0 && totalVisibleRows.length > 0) {
                 barHtml = '<span class="st-label">Subtotal (' + totalVisibleRows.length + ' rows):</span>';
-                for (var ni = 0; ni < numericCols.length; ni++) {
-                    var colIdx = numericCols[ni];
-                    if (hiddenCols.indexOf(colIdx) >= 0) continue;
+                numericCols.forEach(function(colIdx) {
+                    if (hiddenCols.includes(colIdx)) return;
                     if (subtotals[colIdx] !== null) {
-                        var label = header[colIdx] || ('Col ' + (colIdx + 1));
+                        var label = header[colIdx] || 'Col ' + (colIdx + 1);
                         barHtml += '<span class="st-item"><span class="st-key">' + escapeHtml(label) + ':</span><span class="st-val">' + subtotals[colIdx] + '</span></span>';
                     }
-                }
+                });
             } else {
                 barHtml = '<span class="st-label">' + totalVisibleRows.length + ' rows shown</span>';
             }
@@ -601,26 +634,28 @@
             }
 
             for (var r = 0; r < maxRows; r++) {
-                if (r >= frozenRows && hiddenRows.indexOf(r) >= 0) continue;
-                if (r >= frozenRows && pageRows.indexOf(r) < 0) continue;
+                if (r >= frozenRows && hiddenRows.includes(r)) continue;
+                if (r >= frozenRows && pageRows.indexOf(r) === -1) continue;
 
                 var row = rows[r] || {};
                 var cells = row.values || [];
                 var h = rowHeights[r] || 21;
                 var isFrozen = r < frozenRows;
-                var isHeader = r === headerRowIdx;
 
                 html += '<tr style="height:' + h + 'px">';
 
-                if (r >= dataStart) {
-                    var rowNum = startIdx + pageRows.indexOf(r) + 1;
-                    html += '<td style="position:sticky;left:0;z-index:6;background:#f8f9fa;font-weight:600;color:#5f6368;text-align:center;width:44px;border-right:1px solid #dadce0;">' + rowNum + '</td>';
+                if (isFrozen) {
+                    if (r === 0) {
+                        var topOffset = stickyOffsets[0] || 0;
+                        html += '<th rowspan="' + frozenRows + '" style="position:sticky;left:0;top:' + topOffset + 'px;z-index:15;">#</th>';
+                    }
                 } else {
-                    html += '<td style="position:sticky;left:0;z-index:6;background:#f8f9fa;font-weight:600;color:#5f6368;text-align:center;width:44px;border-right:1px solid #dadce0;"></td>';
+                    var displayRowNum = totalVisibleRows.indexOf(r) + 1;
+                    html += '<td style="position:sticky;left:0;z-index:10;background:#f8f9fa;font-weight:600;color:#5f6368;text-align:center;border-right:1px solid #dadce0;">' + displayRowNum + '</td>';
                 }
 
                 for (var c = 0; c < maxCols; c++) {
-                    if (hiddenCols.indexOf(c) >= 0) continue;
+                    if (hiddenCols.includes(c)) continue;
                     if (covered[r][c]) continue;
 
                     var cell = cells[c] || {};
@@ -632,41 +667,29 @@
                     var attrs = [];
                     var inlineStyle = style;
                     if (isFrozen) {
-                        inlineStyle = (inlineStyle ? inlineStyle + ';' : '') + 'position:sticky;top:' + stickyOffsets[r] + 'px;z-index:10;';
+                        inlineStyle = (inlineStyle ? inlineStyle + ';' : '') + 'position:sticky;top:' + stickyOffsets[r] + 'px;z-index:5;';
                     }
-                    if (isHeader) {
-                        var thClass = '';
-                        if (c === sortCol) {
-                            thClass = sortDir === 1 ? 'sort-asc' : (sortDir === 2 ? 'sort-desc' : '');
-                        }
-                        if (thClass) attrs.push('class="' + thClass + '"');
-                        attrs.push('onclick="doSort(' + c + ')"');
-                        attrs.push('style="' + inlineStyle.replace(/"/g, '&quot;') + ';cursor:pointer;"');
-                    } else {
-                        if (inlineStyle) attrs.push('style="' + inlineStyle.replace(/"/g, '&quot;') + '"');
-                    }
+                    if (inlineStyle) attrs.push('style="' + inlineStyle.replace(/"/g, '&quot;') + '"');
                     if (merge) {
                         var visibleSpan = 0;
                         for (var mc = c; mc < c + merge.colspan && mc < maxCols; mc++) {
-                            if (hiddenCols.indexOf(mc) < 0) visibleSpan++;
+                            if (!hiddenCols.includes(mc)) visibleSpan++;
                         }
                         if (visibleSpan > 1) attrs.push('colspan="' + visibleSpan + '"');
                         if (merge.rowspan > 1) attrs.push('rowspan="' + merge.rowspan + '"');
                     }
-                    var w = colWidths[c] || 100;
-                    attrs.push('width="' + w + '"');
 
-                    if (isHeader) {
-                        var sortIcon = '';
-                        if (c === sortCol) {
-                            sortIcon = sortDir === 1 ? '<span class="sort-icon">▲</span>' : (sortDir === 2 ? '<span class="sort-icon">▼</span>' : '<span class="sort-icon">⇅</span>');
-                        } else {
-                            sortIcon = '<span class="sort-icon">⇅</span>';
-                        }
-                        html += '<th ' + attrs.join(' ') + '>' + escapeHtml(val) + sortIcon + '</th>';
-                    } else {
-                        html += '<td ' + attrs.join(' ') + '>' + escapeHtml(val) + '</td>';
+                    var tag = isFrozen ? 'th' : 'td';
+                    var cellContent = escapeHtml(val);
+
+                    if (r === headerRowIdx) {
+                        var sortClass = sortState.col === c ? (sortState.dir === 'asc' ? 'sort-asc' : 'sort-desc') : '';
+                        if (sortClass) attrs.push('class="' + sortClass + '"');
+                        attrs.push('onclick="sortByColumn(' + c + ')"');
+                        cellContent += getSortIcon(c);
                     }
+
+                    html += '<' + tag + ' ' + attrs.join(' ') + '>' + cellContent + '</' + tag + '>';
                 }
                 html += '</tr>';
             }
@@ -675,20 +698,55 @@
             var hrs = Math.round(AUTO_REFRESH_MS / 3600000);
             var showingFrom = totalVisibleRows.length > 0 ? startIdx + 1 : 0;
             var showingTo = Math.min(startIdx + rowsPerPage, totalVisibleRows.length);
-            html += '<div class="caption">Showing ' + showingFrom + '-' + showingTo + ' of ' + totalVisibleRows.length + ' filtered rows (' + (maxRows - dataStart) + ' total data rows). Hidden rows/cols excluded. Auto-refresh: every ' + hrs + ' hour' + (hrs > 1 ? 's' : '') + '.</div>';
+            html += '<div class="caption">Showing ' + showingFrom + '-' + showingTo + ' of ' + totalVisibleRows.length + ' filtered rows (' + (maxRows - dataStart) + ' total data rows). Auto-refresh: every ' + hrs + ' hour' + (hrs > 1 ? 's' : '') + '.</div>';
             sheetArea.innerHTML = html;
             rowCount.textContent = totalVisibleRows.length + ' rows';
 
-            var total = totalVisibleRows.length;
-            if (total > 100) {
-                paginationBar.style.display = 'flex';
-                var maxPage = Math.max(1, Math.ceil(total / rowsPerPage));
-                if (currentPage > maxPage) currentPage = maxPage;
-                pageInfo.textContent = 'Page ' + currentPage + ' of ' + maxPage + ' (' + total + ' rows)';
-                btnPrev.disabled = currentPage <= 1;
-                btnNext.disabled = currentPage >= maxPage;
+            updatePagination();
+        }
+
+        function buildTabs() {
+            var html = '';
+            allSheets.forEach(function(s, i) {
+                var title = s.properties && s.properties.title || 'Sheet ' + (i + 1);
+                var cls = i === currentIdx ? 'tab active' : 'tab';
+                html += '<div class="' + cls + '" data-idx="' + i + '" onclick="switchTab(' + i + ')">' + escapeHtml(title) + '</div>';
+            });
+            tabBar.innerHTML = html;
+        }
+
+        function switchTab(idx) {
+            currentIdx = idx;
+            sortState = { col: null, dir: null };
+            currentPage = 1;
+            var tabs = document.querySelectorAll('.tab');
+            tabs.forEach(function(t) { t.classList.remove('active'); });
+            var activeTab = document.querySelector('.tab[data-idx="' + idx + '"]');
+            if (activeTab) activeTab.classList.add('active');
+            renderSheet(idx);
+        }
+
+        function showToast(msg) {
+            var t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(function() { t.classList.remove('show'); }, 2000);
+        }
+
+        function doSearch() {
+            searchTerm = searchBox.value.trim();
+            sortState = { col: null, dir: null };
+            currentPage = 1;
+            renderSheet(currentIdx);
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(function() {});
+                showToast('Fullscreen enabled');
             } else {
-                paginationBar.style.display = 'none';
+                document.exitFullscreen();
+                showToast('Fullscreen exited');
             }
         }
 
@@ -702,7 +760,7 @@
             try {
                 var url;
                 if (DATA_RANGE) {
-                    var range = SHEET_NAME ? (SHEET_NAME + '!' + DATA_RANGE) : DATA_RANGE;
+                    var range = SHEET_NAME ? SHEET_NAME + '!' + DATA_RANGE : DATA_RANGE;
                     url = 'https://sheets.googleapis.com/v4/spreadsheets/' + SPREADSHEET_ID + '?includeGridData=true&ranges=' + encodeURIComponent(range) + '&key=' + API_KEY;
                 } else {
                     url = 'https://sheets.googleapis.com/v4/spreadsheets/' + SPREADSHEET_ID + '?includeGridData=true&key=' + API_KEY;
@@ -713,20 +771,19 @@
                 var data = await res.json();
 
                 if (!res.ok) {
-                    throw new Error((data.error && data.error.message) ? data.error.message : ('HTTP ' + res.status));
+                    throw new Error(data.error && data.error.message ? data.error.message : 'HTTP ' + res.status);
                 }
                 if (!data.sheets || !data.sheets.length) {
                     throw new Error('No sheets found in this spreadsheet.');
                 }
 
-                var spName = (data.properties && data.properties.title) || 'Sheet Viewer';
-                pageTitle.textContent = spName;
+                spreadsheetName = data.properties && data.properties.title || 'Sheet Viewer';
+                pageTitle.textContent = spreadsheetName;
 
                 allSheets = data.sheets;
                 currentIdx = 0;
+                sortState = { col: null, dir: null };
                 currentPage = 1;
-                sortCol = -1;
-                sortDir = 0;
                 buildTabs();
                 renderSheet(0);
 
