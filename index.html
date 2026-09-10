@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Happy Miles</title>
     
-    <!-- PWA Meta Tags -->
+    <!-- PWA Meta Tags & Icons -->
     <link rel="manifest" href="./manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="./icon.png">
+    <link rel="apple-touch-icon" href="./icon.png">
     <meta name="theme-color" content="#188038">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Happy Miles">
-    <link rel="apple-touch-icon" href="./icon.png">
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -27,8 +28,8 @@
             padding-bottom: env(safe-area-inset-bottom);
         }
 
-        /* Login Modal Styling */
-        .login-overlay {
+        /* Modal Overlays (Login & Entry Write-Back) */
+        .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.6);
@@ -37,24 +38,25 @@
             backdrop-filter: blur(4px);
             padding: 16px;
         }
-        .login-card {
+        .login-card, .modal-card {
             background: #fff;
-            padding: 30px 24px;
+            padding: 24px;
             border-radius: 12px;
             box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-            width: 100%; max-width: 360px;
-            text-align: center;
+            width: 100%; max-width: 400px;
         }
-        .login-card h2 { font-size: 20px; color: #188038; margin-bottom: 6px; }
+        .login-card h2, .modal-card h3 { font-size: 20px; color: #188038; margin-bottom: 6px; }
         .login-card p { font-size: 13px; color: #5f6368; margin-bottom: 20px; }
         .input-group { margin-bottom: 14px; text-align: left; }
         .input-group label { display: block; font-size: 12px; color: #3c4043; margin-bottom: 4px; font-weight: 500; }
-        .input-group input {
+        .input-group input, .input-group select {
             width: 100%; padding: 12px; border: 1px solid #dadce0;
-            border-radius: 6px; font-size: 16px;
-            outline: none;
+            border-radius: 6px; font-size: 15px; outline: none; background: #fff;
+            color: #202124;
         }
-        .input-group input:focus { border-color: #188038; box-shadow: 0 0 0 2px rgba(24,128,56,0.15); }
+        .input-group input:focus, .input-group select:focus {
+            border-color: #188038; box-shadow: 0 0 0 2px rgba(24,128,56,0.15);
+        }
         .login-btn {
             width: 100%; padding: 12px; background: #188038; color: #fff;
             border: none; border-radius: 6px; font-size: 15px; font-weight: 600;
@@ -76,11 +78,15 @@
         .btn:active { background: #e8eaed; transform: scale(0.97); }
         .btn.primary { background: #188038; color: #fff; border-color: #137333; }
         .btn.primary:hover { background: #137333; }
+        
         .status { font-size: 12px; color: #5f6368; display: flex; align-items: center; gap: 6px; margin-left: 8px; }
         .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #34a853; animation: pulse 2s infinite; }
-        .status-dot.error { background: #ea4335; animation: none; }
+        .status-dot.error, .status-dot.offline { background: #ea4335; animation: none; }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
         
+        .queue-badge { background: #e6f4ea; color: #188038; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; display: none; }
+        .queue-badge.has-items { display: inline-block; background: #fce8e8; color: #ea4335; }
+
         .tabs { background: #fff; border-bottom: 1px solid #dadce0; display: flex; align-items: center; padding: 0 8px; flex-shrink: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .tab { padding: 12px 20px; font-size: 13px; color: #5f6368; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.15s; }
         .tab:hover { background: #f1f3f4; color: #202124; }
@@ -108,7 +114,7 @@
         .spinner { width: 36px; height: 36px; border: 3px solid #e8eaed; border-top-color: #188038; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .error-box { margin: 40px auto; max-width: 480px; background: #fce8e8; border: 1px solid #f5c6cb; border-radius: 8px; padding: 20px; text-align: center; color: #721c24; }
-        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); background: #323232; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 13px; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 200; }
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); background: #323232; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 13px; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 2000; }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
         .caption { margin-top: 12px; font-size: 12px; color: #5f6368; text-align: center; }
 
@@ -122,13 +128,13 @@
         .dark .tab.active { background: #188038; color: #fff; }
         .dark .btn { background: #16213e; border-color: #0f3460; color: #e0e0e0; }
         .dark .subtotal-bar { background: #0f3460; border-bottom-color: #188038; }
-        .dark .login-card { background: #16213e; color: #e0e0e0; }
-        .dark .input-group input { background: #1a1a2e; border-color: #0f3460; color: #e0e0e0; }
+        .dark .login-card, .dark .modal-card { background: #16213e; color: #e0e0e0; }
+        .dark .input-group input, .dark .input-group select { background: #1a1a2e; border-color: #0f3460; color: #e0e0e0; }
 
         @media (max-width: 768px) {
             .banner { font-size: 15px; padding: 10px; }
             .topbar { padding: 8px 10px; }
-            .topbar .title { font-size: 14px; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            .topbar .title { font-size: 14px; max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
             .btn { padding: 6px 10px; font-size: 11px; }
             .toolbar { padding: 8px 10px; }
             .subtotal-bar { padding: 8px 10px; gap: 8px; font-size: 11px; }
@@ -142,7 +148,7 @@
 </head>
 <body>
     <!-- Login Modal -->
-    <div class="login-overlay" id="loginOverlay">
+    <div class="modal-overlay" id="loginOverlay">
         <div class="login-card">
             <h2>Happy Miles Login</h2>
             <p>Enter your credentials to access your sheet</p>
@@ -161,6 +167,45 @@
         </div>
     </div>
 
+    <!-- Write-Back Entry Modal -->
+    <div class="modal-overlay" id="entryModal" style="display:none;">
+        <div class="modal-card">
+            <h3>Record New Entry</h3>
+            <form id="entryForm" onsubmit="handleFormSubmit(event)">
+                <div class="input-group">
+                    <label for="formDate">Date</label>
+                    <input type="date" id="formDate" required>
+                </div>
+                <div class="input-group">
+                    <label for="formCat">Category</label>
+                    <select id="formCat" required>
+                        <option value="EXPENSE">EXPENSE (Positive Entry)</option>
+                        <option value="FUEL">FUEL (Positive Entry)</option>
+                        <option value="MAINTENANCE">MAINTENANCE (Positive Entry)</option>
+                        <option value="CASH">CASH (Positive Entry)</option>
+                        <option value="SALE">SALE (Auto-Negated Value)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="formAmount">Amount (₹)</label>
+                    <input type="number" id="formAmount" step="any" placeholder="Enter amount" required>
+                </div>
+                <div class="input-group">
+                    <label for="formRemark">Remarks / Description</label>
+                    <input type="text" id="formRemark" placeholder="Notes...">
+                </div>
+                <div class="input-group">
+                    <label for="formUser">Submitted By</label>
+                    <input type="text" id="formUser" value="Driver_App" required>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:16px;">
+                    <button type="submit" class="login-btn" style="flex:1;">Submit</button>
+                    <button type="button" class="btn" style="flex:1; justify-content:center;" onclick="closeModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="banner" id="banner">Happy Miles</div>
 
     <div class="topbar">
@@ -169,6 +214,7 @@
         </div>
         <div class="title" id="pageTitle">Happy Miles</div>
         <div class="actions">
+            <button class="btn primary" id="recordBtn" onclick="openModal()">+ Record Entry</button>
             <button class="btn" id="refreshBtn">&#x21bb; Refresh</button>
             <button class="btn" id="themeBtn">&#x263D;</button>
             <button class="btn primary" id="pwaInstallBtn" style="display:none;">&#x293B; Install App</button>
@@ -177,6 +223,7 @@
         <div class="status">
             <span class="status-dot" id="statusDot"></span>
             <span id="statusText">Awaiting login...</span>
+            <span class="queue-badge" id="queueBadge">0 queued</span>
         </div>
     </div>
 
@@ -204,7 +251,7 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        // Service Worker for PWA
+        // PWA Service Worker Registration & Install Prompt
         let deferredPrompt;
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed', err));
@@ -235,35 +282,36 @@
         const COMPANY_NAME    = 'Happy Miles';
         const AUTO_REFRESH_MS = 10800000;
         const API_KEY         = 'AIzaSyBDLyEYzxIbwIfpiZj9745vBhbE0_lRYEk';
+        const SCRIPT_URL      = 'YOUR_DEPLOYED_APPS_SCRIPT_WEB_APP_URL';
         const SHEET_NAME      = '';
         const DATA_RANGE      = '';
         
         const USER_CONFIG = {
-    'user1': {
-        password: 'password123',
-        spreadsheetId: '1x0BnUziYQemws3Wd0vzsjGxLBoVeLX02fQzdJ6CEuLg'
-    },
-    'user2': {
-        password: 'password456',
-        spreadsheetId: '1s6ArloJX8LfzUaNXQbq7WMI0d--N2P93yuQOvtGx8qE'
-    },
-    'admin': {
-        password: 'abhishek',
-        spreadsheetId: '1GW7reZMUtYDoc-26DeIBs4bOSM31k8U0JfKidozbkOs'
-    },
-    'owner': {
-        password: 'gzhappy',
-        spreadsheetId: '1GW7reZMUtYDoc-26DeIBs4bOSM31k8U0JfKidozbkOs'
-    },
-    '7944': {
-        password: '7944',
-        spreadsheetId: '1x0BnUziYQemws3Wd0vzsjGxLBoVeLX02fQzdJ6CEuLg'
-    },
-    '8403': {
-        password: '8403',
-        spreadsheetId: '1s6ArloJX8LfzUaNXQbq7WMI0d--N2P93yuQOvtGx8qE'
-    }
-};      
+            'user1': {
+                password: 'password123',
+                spreadsheetId: '1x0BnUziYQemws3Wd0vzsjGxLBoVeLX02fQzdJ6CEuLg'
+            },
+            'user2': {
+                password: 'password456',
+                spreadsheetId: '1s6ArloJX8LfzUaNXQbq7WMI0d--N2P93yuQOvtGx8qE'
+            },
+            'admin': {
+                password: 'abhishek',
+                spreadsheetId: '1GW7reZMUtYDoc-26DeIBs4bOSM31k8U0JfKidozbkOs'
+            },
+            'owner': {
+                password: 'gzhappy',
+                spreadsheetId: '1GW7reZMUtYDoc-26DeIBs4bOSM31k8U0JfKidozbkOs'
+            },
+            '7944': {
+                password: '7944',
+                spreadsheetId: '1x0BnUziYQemws3Wd0vzsjGxLBoVeLX02fQzdJ6CEuLg'
+            },
+            '8403': {
+                password: '8403',
+                spreadsheetId: '1s6ArloJX8LfzUaNXQbq7WMI0d--N2P93yuQOvtGx8qE'
+            }
+        };      
         // ============================================================
 
         document.getElementById('banner').textContent = COMPANY_NAME;
@@ -271,6 +319,7 @@
         const sheetArea    = document.getElementById('sheetArea');
         const statusText   = document.getElementById('statusText');
         const statusDot    = document.getElementById('statusDot');
+        const queueBadge   = document.getElementById('queueBadge');
         const pageTitle    = document.getElementById('pageTitle');
         const tabBar       = document.getElementById('tabBar');
         const filterBox    = document.getElementById('filterBox');
@@ -289,6 +338,12 @@
         let isDark          = false;
         let autoTimer       = null;
 
+        // Auto-set today's date in form
+        document.getElementById('formDate').value = new Date().toISOString().split('T')[0];
+
+        function openModal() { document.getElementById('entryModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('entryModal').style.display = 'none'; }
+
         // Login Form Handler
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -297,7 +352,6 @@
             const rawUser = document.getElementById('username').value.trim();
             const p = document.getElementById('password').value.trim();
             
-            // Case-insensitive user lookup
             const userKey = Object.keys(USER_CONFIG).find(k => k.toLowerCase() === rawUser.toLowerCase());
 
             if (userKey && USER_CONFIG[userKey].password === p) {
@@ -310,7 +364,6 @@
             }
         });
 
-        // Clear error text dynamically on input
         document.getElementById('username').addEventListener('input', () => { loginError.style.display = 'none'; });
         document.getElementById('password').addEventListener('input', () => { loginError.style.display = 'none'; });
 
@@ -335,6 +388,101 @@
         document.getElementById('themeBtn').addEventListener('click', toggleDark);
         searchBox.addEventListener('input', doSearch);
         filterBox.addEventListener('change', doFilter);
+
+        // Connection & Offline Queue Handlers
+        function updateOnlineStatus() {
+            if (navigator.onLine) {
+                statusDot.className = 'status-dot';
+                flushQueue();
+            } else {
+                statusDot.className = 'status-dot offline';
+                statusText.textContent = 'Offline';
+            }
+        }
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            let cat = document.getElementById('formCat').value;
+            let rawAmount = parseFloat(document.getElementById('formAmount').value);
+            let finalAmount = (cat === 'SALE') ? -Math.abs(rawAmount) : Math.abs(rawAmount);
+
+            const payload = {
+                date: document.getElementById('formDate').value,
+                cat: cat,
+                amount: finalAmount,
+                remark: document.getElementById('formRemark').value,
+                user: document.getElementById('formUser').value,
+                userKey: activeUserKey
+            };
+
+            if (!navigator.onLine || SCRIPT_URL === 'YOUR_DEPLOYED_APPS_SCRIPT_WEB_APP_URL') {
+                saveToLocalQueue(payload);
+                showToast('Record saved to offline queue.');
+            } else {
+                try {
+                    await sendToScript(payload);
+                    showToast('Entry recorded directly to Master Sheet!');
+                    setTimeout(() => loadSheet(), 1000);
+                } catch (err) {
+                    saveToLocalQueue(payload);
+                    showToast('Network issue. Saved to offline queue.');
+                }
+            }
+
+            closeModal();
+            document.getElementById('entryForm').reset();
+            document.getElementById('formDate').value = new Date().toISOString().split('T')[0];
+            updateQueueCount();
+        }
+
+        async function sendToScript(payload) {
+            return fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+        }
+
+        function saveToLocalQueue(payload) {
+            const queue = JSON.parse(localStorage.getItem('hm_offline_queue') || '[]');
+            queue.push(payload);
+            localStorage.setItem('hm_offline_queue', JSON.stringify(queue));
+            updateQueueCount();
+        }
+
+        function updateQueueCount() {
+            const queue = JSON.parse(localStorage.getItem('hm_offline_queue') || '[]');
+            if (queue.length > 0) {
+                queueBadge.textContent = `${queue.length} pending`;
+                queueBadge.className = 'queue-badge has-items';
+            } else {
+                queueBadge.textContent = '0 pending';
+                queueBadge.className = 'queue-badge';
+            }
+        }
+
+        async function flushQueue() {
+            if (SCRIPT_URL === 'YOUR_DEPLOYED_APPS_SCRIPT_WEB_APP_URL') return;
+            const queue = JSON.parse(localStorage.getItem('hm_offline_queue') || '[]');
+            if (queue.length === 0) return;
+
+            for (let i = 0; i < queue.length; i++) {
+                try {
+                    await sendToScript(queue[i]);
+                } catch (err) {
+                    console.error('Queue flush failed at index ' + i, err);
+                    return;
+                }
+            }
+            localStorage.setItem('hm_offline_queue', '[]');
+            updateQueueCount();
+            showToast('Offline queue synced successfully!');
+            loadSheet();
+        }
 
         function colorToCss(c) {
             if (!c) return null;
@@ -686,7 +834,7 @@
             const t = document.getElementById('toast');
             t.textContent = msg;
             t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 2000);
+            setTimeout(() => t.classList.remove('show'), 2500);
         }
 
         function doSearch() {
@@ -777,6 +925,7 @@
 
         // Guaranteed App Initialization
         function initApp() {
+            updateQueueCount();
             if (activeUserKey && USER_CONFIG[activeUserKey]) {
                 loginOverlay.style.display = 'none';
                 loadSheet();
